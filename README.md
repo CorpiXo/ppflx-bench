@@ -1,29 +1,33 @@
-# Privacy-Preserving Federated Learning
+# ppflx-bench
 
-[![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/)
-[![Flower 1.36.0](https://img.shields.io/badge/flower-1.36.0-green.svg)](https://flower.ai)
-[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+Benchmarks for [ppflx](https://github.com/CorpiXo/ppflx): the same federated
+learning run under twelve privacy configurations — homomorphic encryption,
+zero-knowledge proofs of bounded updates, differential privacy and their
+combinations — across five datasets, with a blockchain audit ledger.
 
-A benchmarking framework comparing **ten** privacy-preserving federated learning configurations across Homomorphic Encryption (HE), Zero-Knowledge Proofs (ZKP), Differential Privacy (DP), and their combinations — with blockchain audit ledger support, sweep experiments, and non-IID dataset partitioning.
+The library lives in [ppflx](https://github.com/CorpiXo/ppflx) and the proof
+service in
+[gnark-gradient-prover](https://github.com/CorpiXo/gnark-gradient-prover).
 
----
+> **Results are not published yet.** The figures from before the Flower 1.36
+> migration were produced by older protocols and key handling, so they were not
+> carried over. `results/` will be filled by the next full benchmark run.
 
-## Table of Contents
+## Install
 
-1. [Privacy Modes](#privacy-modes)
-2. [Datasets](#datasets)
-3. [Setup](#setup)
-4. [Quick Start](#quick-start)
-5. [Sweep Experiments](#sweep-experiments)
-6. [Statistical Significance](#statistical-significance)
-7. [Blockchain Audit Ledger](#blockchain-audit-ledger)
-8. [Results Directory Structure](#results-directory-structure)
-9. [Architecture](#architecture)
-10. [Performance Reference](#performance-reference)
-11. [Environment Variables](#environment-variables)
-12. [Attack Evaluation Scripts](#attack-evaluation-scripts)
-13. [Troubleshooting](#troubleshooting)
-14. [Documentation](#documentation)
+```bash
+conda create -n ppflx python=3.12 -y && conda activate ppflx
+pip install -r requirements.txt        # installs ppflx from git
+```
+
+The ZKP modes need the proof service built and running; `compare.py` starts it
+for you if the binary is on hand:
+
+```bash
+git clone git@github.com:CorpiXo/gnark-gradient-prover.git
+cd gnark-gradient-prover && go build -o gnark_service .
+export FL_GNARK_BINARY=$PWD/gnark_service
+```
 
 ---
 

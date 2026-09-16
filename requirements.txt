@@ -1,20 +1,16 @@
-tqdm==4.70.1
-numpy==1.26.4
-ray==2.55.1
-matplotlib==3.11.2
-pillow==12.3.0
-scikit-learn==1.5.0
-seaborn==0.13.2
-pandas==3.0.5
-opacus==1.5.4
+# The library under test. Until ppflx is published to PyPI this is a git
+# dependency, so installing it needs access to the repository.
+ppflx @ git+ssh://git@github.com/CorpiXo/ppflx.git@main
+
+# Simulation Runtime (Ray) for --simulation runs
 flwr[simulation]==1.36.0
-tenseal==0.3.18
-concrete-ml==1.9.0
-concrete-python==2.10.0
-pyyaml==6.0.3
-psutil==7.2.2
-requests==2.34.2
-torch==2.3.1
+
+# Datasets and harness reporting
 torchvision==0.18.1
+pandas==3.0.5
+matplotlib==3.11.2
+seaborn==0.13.2
 plotly==7.0.0
+tqdm==4.70.1
+pyyaml==6.0.3
 kaggle==2.2.4
