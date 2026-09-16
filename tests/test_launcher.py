@@ -95,7 +95,7 @@ def test_fab_carries_only_the_app_manifest_and_readme():
     from flwr.cli.build import build_fab_from_files
 
     files = {name: (REPO / name).read_bytes() for name in ("pyproject.toml", ".gitignore", "README.md")}
-    files["ppflx/server.py"] = (REPO / "ppflx" / "server.py").read_bytes()
+    files["ppflx_bench/app.py"] = (REPO / "ppflx_bench" / "app.py").read_bytes()
     files["results/healthcare/run/baseline/.flwr/apps/txcorpi0x.ppflx-bench.1.0.0.x/README.md"] = b"installed copy"
     files["docs/README.md"] = b"nested readme"
 
