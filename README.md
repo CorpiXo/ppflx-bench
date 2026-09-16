@@ -29,6 +29,10 @@ cd gnark-gradient-prover && go build -o gnark_service .
 export FL_GNARK_BINARY=$PWD/gnark_service
 ```
 
+Datasets are not part of this repository: `download_datasets.py` fetches the
+image sets, and the tabular ones are placed under `dataset/` (see
+`docs/README.md`).
+
 ---
 
 ## Privacy Modes

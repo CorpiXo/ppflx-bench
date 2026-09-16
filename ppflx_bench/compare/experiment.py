@@ -175,12 +175,28 @@ def _ensure_gnark_service(log_dir: str) -> bool:
 
 
 def _gnark_binary() -> Optional[str]:
-    # Locate service directory relative to this file:
-    # ppflx_bench/compare/experiment.py → ../../zkp_gnark_service/
+    """The proof service binary: FL_GNARK_BINARY, else a checkout beside this one.
+
+    The service lives in its own repository (gnark-gradient-prover); build it
+    there and point FL_GNARK_BINARY at the binary.
+    """
+    from_env = os.environ.get("FL_GNARK_BINARY")
+    if from_env:
+        if not os.path.exists(from_env):
+            print(f"[gnark] [ERROR] FL_GNARK_BINARY={from_env} does not exist")
+            return None
+        return from_env
+
     here = os.path.dirname(os.path.abspath(__file__))
     repo_root = os.path.abspath(os.path.join(here, "..", ".."))
     svc_dir = os.path.join(repo_root, "zkp_gnark_service")
     binary = os.path.join(svc_dir, "gnark_service")
+    if not os.path.isdir(svc_dir):
+        print(
+            "[gnark] [ERROR] No proof service found. Clone and build "
+            "github.com/CorpiXo/gnark-gradient-prover, then set FL_GNARK_BINARY to its binary."
+        )
+        return None
 
     if not os.path.exists(binary):
         needs_build = True
