@@ -6,9 +6,9 @@ import shutil
 from sklearn.metrics import roc_curve, auc, confusion_matrix
 import torch.nn.functional
 from collections import OrderedDict
-from .security import *
-from .security import _concrete_quantize, simulate_concrete_encrypt
-from .zkp import zkp_commit_model, ZKPLayer
+from ppflx.core.security import *
+from ppflx.core.security import _concrete_quantize, simulate_concrete_encrypt
+from ppflx.core.zkp import zkp_commit_model, ZKPLayer
 import io
 import zlib
 import struct

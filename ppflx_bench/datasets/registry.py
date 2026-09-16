@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from typing import Dict, Type
 
-from fl.datasets.base import DatasetLoader
+from ppflx_bench.datasets.base import DatasetLoader
 
 _REGISTRY: Dict[str, Type[DatasetLoader]] = {}
 

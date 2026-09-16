@@ -2,8 +2,8 @@
 Run one experiment on Flower: a SuperLink, one SuperNode per client, and the
 Flower App declared in pyproject.toml.
 
-The SuperLink starts the ServerApp (``fl.app:server_app``); each SuperNode
-starts a ClientApp process (``fl.app:client_app``) for every message. All of
+The SuperLink starts the ServerApp (``ppflx_bench.app:server_app``); each SuperNode
+starts a ClientApp process (``ppflx_bench.app:client_app``) for every message. All of
 them run from the repository root with this checkout on PYTHONPATH, so relative
 key and dataset paths resolve as they do for compare.py. ``flwr run`` submits
 the run; its FAB carries only pyproject.toml and the README.
@@ -13,8 +13,8 @@ of connecting SuperNodes, and HE modes transport plaintext (sim-mode).
 
 ZKP modes need the gnark proof service (compare.py starts it). By hand::
 
-    python -m fl.launch --mode baseline --dataset healthcare --num-clients 3 --num-rounds 3
-    python -m fl.launch --mode dp --simulation --results-dir results/dp_sim/
+    python -m ppflx_bench.launch --mode baseline --dataset healthcare --num-clients 3 --num-rounds 3
+    python -m ppflx_bench.launch --mode dp --simulation --results-dir results/dp_sim/
 """
 
 from __future__ import annotations

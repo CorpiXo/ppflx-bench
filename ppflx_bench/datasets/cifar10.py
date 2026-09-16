@@ -12,7 +12,7 @@ privacy research:
 
   • Gradient inversion attacks reconstruct recognisable images (DLG, iDLG).
   • Non-IID severity has a stronger effect on accuracy than tabular datasets.
-  • The CNN model (Net in fl/core/model_builder.py) is already compatible.
+  • The CNN model (Net in ppflx/core/model_builder.py) is already compatible.
 
 Usage
 -----
@@ -34,9 +34,9 @@ import torchvision.transforms as T
 from torch.utils.data import DataLoader, random_split
 from torchvision.datasets import CIFAR10
 
-from fl.datasets.base import DatasetSpec, DatasetLoader
-from fl.datasets.creditcard import _dirichlet_partition
-from fl.datasets.registry import register_dataset
+from ppflx_bench.datasets.base import DatasetSpec, DatasetLoader
+from ppflx_bench.datasets.creditcard import _dirichlet_partition
+from ppflx_bench.datasets.registry import register_dataset
 
 
 @register_dataset("cifar10")

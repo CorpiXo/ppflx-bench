@@ -133,10 +133,10 @@ class ModeConfig:
                 return None  # gnark doesn't need a pre-generated params file
         if not os.path.exists(self.requires_key):
             cmd_hint = {
-                "keys/he_tenseal/secret_context.bin": "python -m fl.keys generate he_tenseal",
-                "keys/zkp/zkp_params.json": "python -m fl.keys generate zkp",
-                "keys/dp/dp_params.json": "python -m fl.keys generate dp",
-            }.get(self.requires_key, f"python -m fl.keys generate <type>")
+                "keys/he_tenseal/secret_context.bin": "python -m ppflx.keys generate he_tenseal",
+                "keys/zkp/zkp_params.json": "python -m ppflx.keys generate zkp",
+                "keys/dp/dp_params.json": "python -m ppflx.keys generate dp",
+            }.get(self.requires_key, f"python -m ppflx.keys generate <type>")
             return f"Missing prerequisite: {self.requires_key}\n" f"  Run: {cmd_hint}"
         return None
 

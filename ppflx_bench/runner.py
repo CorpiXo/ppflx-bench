@@ -5,8 +5,8 @@ Replaces compare_methods_simple.py with a clean, library-based API.
 
 Usage::
 
-    from fl import FLConfig
-    from fl.runner import run_mode, run_comparison
+    from ppflx import FLConfig
+    from ppflx_bench.runner import run_mode, run_comparison
 
     cfg = FLConfig(dataset="creditcard", num_rounds=3)
 
@@ -34,7 +34,7 @@ from typing import Dict, List, Optional
 
 import numpy as np
 
-from fl.config import FLConfig
+from ppflx.config import FLConfig
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -58,8 +58,8 @@ def run_mode(
     Returns:
         Dict with keys from BenchmarkMetrics.summary() plus "mode" and "duration_s".
     """
-    from fl.compare.benchmark import aggregate_client_benchmarks, merge_server_and_clients
-    from fl.launch import run
+    from ppflx_bench.compare.benchmark import aggregate_client_benchmarks, merge_server_and_clients
+    from ppflx_bench.launch import run
 
     os.makedirs(output_dir, exist_ok=True)
 

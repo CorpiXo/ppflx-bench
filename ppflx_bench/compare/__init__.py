@@ -1,9 +1,9 @@
 """
-fl.compare — dataset/mode registry and experiment runner.
+ppflx_bench.compare — dataset/mode registry and experiment runner.
 
 Public API::
 
-    from fl.compare import DATASETS, MODES, run_comparison, CompareConfig
+    from ppflx_bench.compare import DATASETS, MODES, run_comparison, CompareConfig
 
     # Run with dataset defaults
     run_comparison(dataset="healthcare", modes=["baseline", "zkp", "dp"])
@@ -18,13 +18,13 @@ Public API::
     )
     run_comparison(cfg)
 
-Adding a new dataset: add one entry to fl/compare/registry.py → DATASETS.
-Adding a new mode:  add one entry to fl/compare/registry.py → MODES.
+Adding a new dataset: add one entry to ppflx_bench/compare/registry.py → DATASETS.
+Adding a new mode:  add one entry to ppflx_bench/compare/registry.py → MODES.
 No other files need to change.
 """
 
-from fl.compare.registry import DATASETS, MODES, DatasetConfig, ModeConfig
-from fl.compare.runner import (
+from ppflx_bench.compare.registry import DATASETS, MODES, DatasetConfig, ModeConfig
+from ppflx_bench.compare.runner import (
     CompareConfig,
     run_comparison,
     run_alpha_sweep,

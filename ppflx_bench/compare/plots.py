@@ -7,7 +7,7 @@ from __future__ import annotations
 import os
 from typing import Any, Dict, List, Optional
 
-from fl.compare.registry import MODES
+from ppflx_bench.compare.registry import MODES
 
 
 def _best_accuracy(metrics: Dict) -> Optional[float]:

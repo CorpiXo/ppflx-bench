@@ -10,12 +10,12 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from fl.compare.diagnostics import add_diagnostics
-from fl.compare.experiment import run_experiment
-from fl.compare.plots import create_plots
-from fl.compare.registry import DATASETS, MODES, DatasetConfig, ModeConfig
-from fl.compare.report import print_summary
-from fl.compare.validation import (
+from ppflx_bench.compare.diagnostics import add_diagnostics
+from ppflx_bench.compare.experiment import run_experiment
+from ppflx_bench.compare.plots import create_plots
+from ppflx_bench.compare.registry import DATASETS, MODES, DatasetConfig, ModeConfig
+from ppflx_bench.compare.report import print_summary
+from ppflx_bench.compare.validation import (
     ZKP_INTERNAL_MODES,
     load_ledger_entries,
     sampled_coverage_warning,
@@ -141,7 +141,7 @@ def run_comparison(
         ``True`` (default) → every ZKP-family mode must show, in its chain
         ledger, proofs from every aggregated client in every round; any
         failure marks that result unsuccessful and raises after the report is
-        written. See fl/compare/validation.py for what is not checked.
+        written. See ppflx_bench/compare/validation.py for what is not checked.
     **extra_args:
         Forwarded verbatim to the experiment subprocess.
 
@@ -326,7 +326,7 @@ def _merge_chain_ledgers(
     """Merge per-mode ledger JSON files into one combined audit file and print a summary.
 
     Each mode produces a ``ledger_<mode>.json`` under *ledger_dir* (written by
-    ``fl/server.py`` via ``MockChain.save()``).  This function:
+    ``ppflx/server.py`` via ``MockChain.save()``).  This function:
 
     1. Loads each per-mode ledger (skip silently if missing/empty).
     2. Writes a combined ``ledger_comparison.json`` into *run_dir*.

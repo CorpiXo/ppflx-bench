@@ -2,7 +2,7 @@
 Experiment runner — simulation and distributed modes.
 
 These functions are the engine behind the comparison framework.
-They are invoked by fl.compare.runner.run_comparison() and should not
+They are invoked by ppflx_bench.compare.runner.run_comparison() and should not
 normally be called directly.
 """
 
@@ -20,11 +20,11 @@ import urllib.request
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from fl.compare.benchmark import (
+from ppflx_bench.compare.benchmark import (
     aggregate_client_benchmarks,
     merge_server_and_clients,
 )
-from fl.compare.registry import ModeConfig
+from ppflx_bench.compare.registry import ModeConfig
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -108,7 +108,7 @@ def _gnark_matches_pin(role: str, health: Optional[dict]) -> bool:
     A legacy service (per-process keys, no role) or one started from other keys
     fails this check and is replaced rather than reused.
     """
-    from fl.core.gnark_keys import manifest_sha256
+    from ppflx.core.gnark_keys import manifest_sha256
 
     return bool(health) and health.get("role") == role and health.get("manifest_sha256") == manifest_sha256()
 
@@ -152,7 +152,7 @@ def _ensure_gnark_service(log_dir: str) -> bool:
     pinned manifest hash; anything else on the port is killed and replaced.
     Returns True only if both roles are up; ZKP modes must not run otherwise.
     """
-    from fl.core.gnark_keys import keys_dir, load_manifest, missing_proving_keys, pk_dir
+    from ppflx.core.gnark_keys import keys_dir, load_manifest, missing_proving_keys, pk_dir
 
     try:
         load_manifest()
@@ -176,7 +176,7 @@ def _ensure_gnark_service(log_dir: str) -> bool:
 
 def _gnark_binary() -> Optional[str]:
     # Locate service directory relative to this file:
-    # fl/compare/experiment.py → ../../zkp_gnark_service/
+    # ppflx_bench/compare/experiment.py → ../../zkp_gnark_service/
     here = os.path.dirname(os.path.abspath(__file__))
     repo_root = os.path.abspath(os.path.join(here, "..", ".."))
     svc_dir = os.path.join(repo_root, "zkp_gnark_service")
@@ -217,7 +217,7 @@ def _gnark_binary() -> Optional[str]:
 
 
 def _ensure_gnark_role(role: str, binary: str, log_dir: str) -> bool:
-    from fl.core.gnark_keys import keys_dir, pk_dir
+    from ppflx.core.gnark_keys import keys_dir, pk_dir
 
     health = _gnark_health(role)
     if _gnark_matches_pin(role, health):
@@ -387,7 +387,7 @@ def _run_federation(
     simulation: bool,
 ) -> Dict:
     """Run one mode on a local SuperLink, with SuperNode processes unless simulating."""
-    from fl.launch import Federation
+    from ppflx_bench.launch import Federation
 
     run_config = run_config_for(display_mode, base_args, result_dir, simulation)
     num_clients = run_config["num-clients"]

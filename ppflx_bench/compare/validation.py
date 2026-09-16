@@ -32,7 +32,7 @@ import os
 from collections import defaultdict
 from typing import Any, Dict, List, Optional
 
-# Internal mode names (fl.compare.registry.ModeConfig.internal_mode) that
+# Internal mode names (ppflx_bench.compare.registry.ModeConfig.internal_mode) that
 # generate and verify gnark proofs.
 ZKP_INTERNAL_MODES = frozenset({"zkp", "he_zkp", "he_zkp_dp"})
 

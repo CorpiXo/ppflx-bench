@@ -6,13 +6,13 @@ from torchvision import datasets, transforms
 from torch.utils.data import DataLoader, random_split, TensorDataset
 import torch
 
-from .common import *
+from ppflx_bench.legacy.common import *
 
 NUM_WORKERS = os.cpu_count()
 
-# Tabular dataset loaders (fl/datasets/sources.py)
+# Tabular dataset loaders (ppflx_bench/datasets/sources.py)
 try:
-    from fl.datasets.sources import (
+    from ppflx_bench.datasets.sources import (
         load_heart_disease_data,
         load_stock_market_data,
         load_creditcard_data,
@@ -84,7 +84,7 @@ def load_datasets(
         # Use healthcare dataset
         if not CUSTOM_DATASETS_AVAILABLE:
             raise RuntimeError(
-                "Healthcare dataset loader not available. Please ensure fl/datasets/sources.py is importable."
+                "Healthcare dataset loader not available. Please ensure ppflx_bench/datasets/sources.py is importable."
             )
 
         print("Loading Healthcare (Heart Disease) dataset for tabular data...")
@@ -96,7 +96,7 @@ def load_datasets(
         # Use credit card fraud detection dataset
         if not CUSTOM_DATASETS_AVAILABLE:
             raise RuntimeError(
-                "Credit card dataset loader not available. Please ensure fl/datasets/sources.py is importable."
+                "Credit card dataset loader not available. Please ensure ppflx_bench/datasets/sources.py is importable."
             )
 
         print("Loading Credit Card Fraud Detection dataset for tabular data...")
@@ -109,7 +109,7 @@ def load_datasets(
         # Use stock market dataset
         if not CUSTOM_DATASETS_AVAILABLE:
             raise RuntimeError(
-                "Stock market dataset loader not available. Please ensure fl/datasets/sources.py is importable."
+                "Stock market dataset loader not available. Please ensure ppflx_bench/datasets/sources.py is importable."
             )
 
         print("Loading Stock Market dataset for tabular data...")

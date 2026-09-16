@@ -11,9 +11,9 @@ from typing import List, Tuple
 
 from torch.utils.data import DataLoader
 
-from fl.datasets.base import DatasetSpec, DatasetLoader
-from fl.datasets.registry import register_dataset
-from fl.datasets.creditcard import _partition_tabular
+from ppflx_bench.datasets.base import DatasetSpec, DatasetLoader
+from ppflx_bench.datasets.registry import register_dataset
+from ppflx_bench.datasets.creditcard import _partition_tabular
 
 
 @register_dataset("healthcare")
@@ -27,7 +27,7 @@ class HealthcareLoader(DatasetLoader):
     )
 
     def load(self, config) -> Tuple[List[DataLoader], List[DataLoader], DataLoader]:
-        from fl.datasets.sources import load_heart_disease_data, HealthcareDataset
+        from ppflx_bench.datasets.sources import load_heart_disease_data, HealthcareDataset
 
         print("Loading Healthcare (Heart Disease) dataset…")
         X_train, X_test, y_train, y_test = load_heart_disease_data()

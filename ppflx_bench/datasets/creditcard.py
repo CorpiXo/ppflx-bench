@@ -19,8 +19,8 @@ import numpy as np
 import torch
 from torch.utils.data import DataLoader, Subset, random_split
 
-from fl.datasets.base import DatasetSpec, DatasetLoader
-from fl.datasets.registry import register_dataset
+from ppflx_bench.datasets.base import DatasetSpec, DatasetLoader
+from ppflx_bench.datasets.registry import register_dataset
 
 
 @register_dataset("creditcard")
@@ -43,7 +43,7 @@ class CreditCardLoader(DatasetLoader):
         Returns:
             (trainloaders, valloaders, testloader)
         """
-        from fl.datasets.sources import load_creditcard_data, CreditCardDataset
+        from ppflx_bench.datasets.sources import load_creditcard_data, CreditCardDataset
 
         print("Loading Credit Card Fraud Detection dataset…")
         X_train, X_test, y_train, y_test = load_creditcard_data(subsample=None)
