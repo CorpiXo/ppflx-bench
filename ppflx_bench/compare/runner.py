@@ -13,7 +13,7 @@ from typing import Any, Dict, List, Optional
 from ppflx_bench.compare.diagnostics import add_diagnostics
 from ppflx_bench.compare.experiment import run_experiment
 from ppflx_bench.compare.plots import create_plots
-from ppflx_bench.compare.registry import DATASETS, MODES, DatasetConfig, ModeConfig
+from ppflx_bench.compare.registry import DATASETS, DEFAULT_DATA_PATH, MODES, DatasetConfig, ModeConfig
 from ppflx_bench.compare.report import print_summary
 from ppflx_bench.compare.validation import (
     ZKP_INTERNAL_MODES,
@@ -34,7 +34,7 @@ class CompareConfig:
     max_epochs: Optional[int] = None  # None → use dataset default
     batch_size: Optional[int] = None  # None → use dataset default
     device: str = "cpu"
-    data_path: str = "data/"
+    data_path: str = DEFAULT_DATA_PATH
     output_dir: str = "results/"
     use_simulation: bool = False
     # Blockchain audit ledger
@@ -108,7 +108,7 @@ def run_comparison(
     max_epochs: Optional[int] = None,
     batch_size: Optional[int] = None,
     device: str = "cpu",
-    data_path: str = "data/",
+    data_path: str = DEFAULT_DATA_PATH,
     output_dir: str = "results/",
     use_simulation: bool = False,
     chain_backend: str = "mock",
@@ -455,7 +455,7 @@ def run_alpha_sweep(
     max_epochs: Optional[int] = None,
     batch_size: Optional[int] = None,
     device: str = "cpu",
-    data_path: str = "data/",
+    data_path: str = DEFAULT_DATA_PATH,
     output_dir: str = "results/",
     use_simulation: bool = False,
     chain_backend: str = "mock",
@@ -592,7 +592,7 @@ def run_dp_epsilon_sweep(
     max_epochs: Optional[int] = None,
     batch_size: Optional[int] = None,
     device: str = "cpu",
-    data_path: str = "data/",
+    data_path: str = DEFAULT_DATA_PATH,
     output_dir: str = "results/",
     use_simulation: bool = False,
     chain_backend: str = "mock",

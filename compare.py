@@ -4,7 +4,7 @@ compare.py — Federated learning privacy-mode comparison CLI.
 
 Examples
 --------
-# Run all modes for the healthcare dataset (real gRPC):
+# The full run: all registered modes, 3 clients, 20 rounds, networked:
 python compare.py --dataset healthcare
 
 # Run specific modes with fewer rounds:
@@ -39,6 +39,8 @@ warnings.filterwarnings("ignore", category=DeprecationWarning, module=r"distutil
 import argparse
 import sys
 
+from ppflx_bench.compare.registry import DEFAULT_DATA_PATH
+
 
 def _list_registry() -> None:
     from ppflx_bench.compare.registry import DATASETS, MODES
@@ -55,6 +57,8 @@ def _list_registry() -> None:
 
 
 def _build_parser() -> argparse.ArgumentParser:
+    from ppflx_bench.compare.registry import MODES
+
     p = argparse.ArgumentParser(
         description="Compare federated learning privacy modes.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -68,8 +72,9 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     p.add_argument(
         "--modes",
-        default="baseline,dp,he_tenseal,he_concrete_tfhe,zkp,zkp_sampled,he_tenseal_zkp,he_concrete_tfhe_zkp,he_tenseal_zkp_dp,he_concrete_tfhe_zkp_dp",
-        help="Comma-separated mode keys to run. Default: all 10 modes.",
+        default=None,
+        help=f"Comma-separated mode keys to run. Default: all {len(MODES)} registered modes "
+        f"({','.join(MODES)}).",
     )
     p.add_argument(
         "--num-clients",
@@ -102,8 +107,9 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     p.add_argument(
         "--data-path",
-        default="../dataset/",
-        help="Root data directory (default: ../dataset/ — the centralised dataset/ folder at project root)",
+        default=DEFAULT_DATA_PATH,
+        help=f"Root data directory (default: {DEFAULT_DATA_PATH}, the folder download_datasets.py fills). "
+        "Relative paths resolve against this repository, where the Flower processes run.",
     )
     p.add_argument(
         "--output-dir",
