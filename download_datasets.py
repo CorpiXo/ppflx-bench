@@ -40,9 +40,8 @@ Kaggle setup (one-time):
     # Or set env vars KAGGLE_USERNAME and KAGGLE_KEY
     # See: https://www.kaggle.com/docs/api
 
-After downloading, point fl_ppml's comparison runner at this directory:
-    cd fl_ppml
-    python compare.py --dataset mnist --data-path ../dataset/ ...
+compare.py reads this directory by default (--data-path ./dataset/):
+    python compare.py --dataset mnist
 """
 
 from __future__ import annotations
@@ -416,11 +415,9 @@ def main() -> None:
 
     print(
         "All datasets ready.\n\n"
-        "To point the FL runner at this directory:\n"
-        "  cd fl_ppml\n"
-        "  python compare.py --dataset mnist   --data-path ../dataset/ ...\n"
-        "  python compare.py --dataset cifar10 --data-path ../dataset/ ...\n"
-        "  (Kaggle datasets are found automatically via relative-path lookup.)"
+        f"compare.py reads {DATASET_DIR} by default:\n"
+        "  python compare.py --dataset healthcare\n"
+        "  python compare.py --dataset mnist"
     )
 
 

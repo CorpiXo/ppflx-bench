@@ -30,10 +30,17 @@ if [[ ! -f keys/dp/dp_params.json ]]; then
 fi
 
 # 3. gnark ZKP service  (zkp_sampled, he_*_zkp, triple modes)
-if ! pgrep -x "gnark_service" > /dev/null 2>&1; then
-    echo "[PREREQ] gnark ZKP service is not running."
-    echo "         Build and start it with:"
-    echo "           cd zkp_gnark_service && go build -o gnark_service main.go && ./gnark_service &"
+#    compare.py starts the prover and verifier itself from FL_GNARK_BINARY,
+#    under the keys in FL_ZKP_KEYS_DIR and FL_ZKP_PK_DIR.
+if [[ -z "${FL_GNARK_BINARY:-}" || ! -x "${FL_GNARK_BINARY}" ]]; then
+    echo "[PREREQ] FL_GNARK_BINARY does not point at a built gnark_service."
+    echo "         Build github.com/CorpiXo/gnark-gradient-prover (go build -o gnark_service .) and export FL_GNARK_BINARY."
+    PREREQ_FAIL=1
+fi
+if [[ -z "${FL_ZKP_KEYS_DIR:-}" || ! -f "${FL_ZKP_KEYS_DIR}/manifest.json" || -z "${FL_ZKP_PK_DIR:-}" ]]; then
+    echo "[PREREQ] No local ZKP key set. Make one outside the repositories:"
+    echo "           \$FL_GNARK_BINARY setup --keys-dir ~/.cache/ppflx/keys --pk-dir ~/.cache/ppflx/pk"
+    echo "           export FL_ZKP_KEYS_DIR=~/.cache/ppflx/keys FL_ZKP_PK_DIR=~/.cache/ppflx/pk"
     PREREQ_FAIL=1
 fi
 

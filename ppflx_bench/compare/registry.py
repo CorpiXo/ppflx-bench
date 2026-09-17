@@ -17,6 +17,11 @@ import os
 from dataclasses import dataclass
 from typing import Dict, Optional
 
+# Root data directory the harness hands to the Flower app: the folder
+# download_datasets.py fills. The Flower processes run in this repository, so
+# a relative path resolves against it.
+DEFAULT_DATA_PATH = "./dataset/"
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # DatasetConfig

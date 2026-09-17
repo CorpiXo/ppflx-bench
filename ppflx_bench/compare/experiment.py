@@ -10,7 +10,6 @@ from __future__ import annotations
 
 import json
 import os
-import shutil
 import signal
 import subprocess
 import sys
@@ -141,30 +140,39 @@ def _needs_gnark(mode_cfg: ModeConfig) -> bool:
     return os.environ.get("FL_ZKP_BACKEND", "gnark").lower() == "gnark"
 
 
+# How a new machine gets keys it can prove under: a local setup outside every
+# repository. Never re-key the pinned keys to get started.
+LOCAL_KEY_SETUP = (
+    "Make a local key set outside the repositories:\n"
+    "    $FL_GNARK_BINARY setup --keys-dir ~/.cache/ppflx/keys --pk-dir ~/.cache/ppflx/pk\n"
+    "    export FL_ZKP_KEYS_DIR=~/.cache/ppflx/keys FL_ZKP_PK_DIR=~/.cache/ppflx/pk"
+)
+
+
 def _ensure_gnark_service(log_dir: str) -> bool:
     """Start the gnark prover and verifier services under the pinned keys.
 
-    Build order:
-      1. If a pre-built binary ``zkp_gnark_service/gnark_service`` exists, use it.
-      2. Otherwise, run ``go build -o gnark_service .`` in that directory.
-
-    A running service is reused only if it reports the expected role and the
-    pinned manifest hash; anything else on the port is killed and replaced.
-    Returns True only if both roles are up; ZKP modes must not run otherwise.
+    The binary comes from FL_GNARK_BINARY (gnark-gradient-prover), the keys
+    from FL_ZKP_KEYS_DIR and FL_ZKP_PK_DIR. A running service is reused only if
+    it reports the expected role and the pinned manifest hash; anything else on
+    the port is killed and replaced. Returns True only if both roles are up;
+    ZKP modes must not run otherwise.
     """
     from ppflx.core.gnark_keys import keys_dir, load_manifest, missing_proving_keys, pk_dir
 
     try:
         load_manifest()
         missing = missing_proving_keys()
+    except FileNotFoundError as exc:
+        print(f"[gnark] [ERROR] No ZKP key manifest in {keys_dir()}: {exc}\n{LOCAL_KEY_SETUP}")
+        return False
     except (OSError, ValueError, KeyError) as exc:
         print(f"[gnark] [ERROR] Pinned ZKP keys unusable: {exc}")
         return False
     if missing:
         print(
-            f"[gnark] [ERROR] Proving keys {missing} not in {pk_dir()}. They are not committed; "
-            f"regenerate with: zkp_gnark_service/gnark_service setup --keys-dir {keys_dir()} "
-            f"--pk-dir {pk_dir()} --force (this re-pins the verifying keys, commit the result)"
+            f"[gnark] [ERROR] Proving keys {missing} not in {pk_dir()} for the manifest in {keys_dir()}. "
+            f"Proving keys are never committed.\n{LOCAL_KEY_SETUP}"
         )
         return False
 
@@ -175,61 +183,19 @@ def _ensure_gnark_service(log_dir: str) -> bool:
 
 
 def _gnark_binary() -> Optional[str]:
-    """The proof service binary: FL_GNARK_BINARY, else a checkout beside this one.
-
-    The service lives in its own repository (gnark-gradient-prover); build it
-    there and point FL_GNARK_BINARY at the binary.
-    """
+    """The proof service binary from FL_GNARK_BINARY; there is no default."""
     from_env = os.environ.get("FL_GNARK_BINARY")
-    if from_env:
-        if not os.path.exists(from_env):
-            print(f"[gnark] [ERROR] FL_GNARK_BINARY={from_env} does not exist")
-            return None
-        return from_env
-
-    here = os.path.dirname(os.path.abspath(__file__))
-    repo_root = os.path.abspath(os.path.join(here, "..", ".."))
-    svc_dir = os.path.join(repo_root, "zkp_gnark_service")
-    binary = os.path.join(svc_dir, "gnark_service")
-    if not os.path.isdir(svc_dir):
+    if not from_env:
         print(
-            "[gnark] [ERROR] No proof service found. Clone and build "
-            "github.com/CorpiXo/gnark-gradient-prover, then set FL_GNARK_BINARY to its binary."
+            "[gnark] [ERROR] FL_GNARK_BINARY is not set. Clone "
+            "github.com/CorpiXo/gnark-gradient-prover, build it (go build -o gnark_service .) "
+            "and set FL_GNARK_BINARY to the binary."
         )
         return None
-
-    if not os.path.exists(binary):
-        needs_build = True
-    else:
-        # Rebuild if any Go source file is newer than the binary
-        binary_mtime = os.path.getmtime(binary)
-        needs_build = any(
-            os.path.getmtime(os.path.join(svc_dir, f)) > binary_mtime
-            for f in os.listdir(svc_dir)
-            if f.endswith(".go")
-        )
-        if needs_build:
-            print("[gnark] Source files changed — rebuilding binary...")
-
-    if needs_build:
-        if shutil.which("go") is None:
-            print(
-                "[gnark] [ERROR] 'go' not in PATH and no pre-built binary found — cannot start gnark service."
-            )
-            return None
-        print(f"[gnark] Building gnark service binary...")
-        result = subprocess.run(
-            ["go", "build", "-o", "gnark_service", "."],
-            cwd=svc_dir,
-            capture_output=True,
-            text=True,
-            timeout=180,
-        )
-        if result.returncode != 0:
-            print(f"[gnark] [ERROR] Build failed:\n{result.stderr}")
-            return None
-        print("[gnark] Build OK.")
-    return binary
+    if not os.path.exists(from_env):
+        print(f"[gnark] [ERROR] FL_GNARK_BINARY={from_env} does not exist; build gnark-gradient-prover first")
+        return None
+    return from_env
 
 
 def _ensure_gnark_role(role: str, binary: str, log_dir: str) -> bool:

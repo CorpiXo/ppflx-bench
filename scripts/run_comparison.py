@@ -14,13 +14,15 @@ import argparse
 import sys
 import os
 
-# Ensure fl_ppml/ is on sys.path when running as a plain script
+# Ensure the repository root is on sys.path when running as a plain script
 _HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if _HERE not in sys.path:
     sys.path.insert(0, _HERE)
 
 
-ALL_MODES = ["baseline", "he_tenseal", "he_concrete_tfhe", "zkp", "dp"]
+from ppflx_bench.compare.registry import MODES
+
+ALL_MODES = list(MODES)
 
 
 def main() -> None:
@@ -29,7 +31,7 @@ def main() -> None:
         "--modes",
         nargs="+",
         default=["baseline"],
-        help="Modes to run, or 'all' for all 6 modes",
+        help=f"Modes to run, or 'all' for all {len(ALL_MODES)} registered modes",
     )
     parser.add_argument("--dataset", default="creditcard")
     parser.add_argument("--clients", type=int, default=5)

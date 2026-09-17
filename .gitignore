@@ -222,13 +222,10 @@ dataset/
 
 # Keys
 keys/
-# Pinned Groth16 verifying keys and manifest are committed (docs/ZKP.md, section 7);
-# proving keys live in a local cache outside the repository.
-!zkp_gnark_service/keys/
-# Key-management source code, not key material.
-!fl/keys/
+# ZKP keys live outside the repository (FL_ZKP_KEYS_DIR, FL_ZKP_PK_DIR); the
+# pinned verifying keys ship with ppflx.
 
-# Flower state (FLWR_HOME) that fl.launch keeps next to each run's logs;
+# Flower state (FLWR_HOME) that ppflx_bench.launch keeps next to each run's logs;
 # also keeps it out of the FAB that `flwr run` builds from this directory.
 .flwr/
 
