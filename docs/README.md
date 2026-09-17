@@ -6,7 +6,7 @@ This directory contains comprehensive reference guides covering the privacy tech
 |-------|---------------|
 | [FL.md](FL.md)   | Federated learning theory · FedAvg · convergence · heterogeneity · Byzantine robustness · cross-silo vs cross-device · incentive mechanisms · **Dirichlet non-IID partitioning · alpha sweep experiment** |
 | [FHE.md](FHE.md) | FHE theory · TenSEAL & CKKS · Concrete ML & TFHE · threshold/multi-key FHE · selective encryption · **HE environment variables reference** |
-| [ZKP.md](ZKP.md) | ZKP theory · gnark Groth16 · Pedersen commitments · IVC/NOVA · KZG commitments · post-quantum ZKP · FL integration · **ZKP environment variables reference** |
+| [ZKP.md](https://github.com/CorpiXo/ppflx/blob/main/docs/ZKP.md) (in ppflx) | ZKP theory · gnark Groth16 · Pedersen commitments · IVC/NOVA · KZG commitments · post-quantum ZKP · FL integration · **ZKP environment variables reference** |
 | [DP.md](DP.md)   | DP theory · DP-SGD · Opacus · ghost clipping · privacy auditing · lower bounds · composition theorems · **epsilon sweep experiment · runtime epsilon override · privacy-utility tradeoff curve** |
 | [BC.md](BC.md)   | Blockchain integration · ZKP + FHE + FL + DB on-chain · smart contracts · BCFL taxonomy · GDPR/immutability tension · ZK-rollups · incentive design · current systems |
 > Note: the separate `ATTACKS.md` guide is not part of this checkout.
@@ -51,26 +51,28 @@ This layering is composable and safe: each mechanism operates at a distinct pipe
 
 ## 1. One-time Setup
 
-```bash
-cd fl_ppml
+The full setup, from cloning the three repositories to accepted results, is in
+[the README's "Benchmark on a new machine"](../README.md#benchmark-on-a-new-machine).
+From `ppflx-bench/`:
 
+```bash
 ## Generate HE keys (TenSEAL CKKS context)
 python -m ppflx.keys generate he_tenseal --secret keys/he_tenseal/secret_context.bin --public keys/he_tenseal/public_context.bin
 
 ## Generate DP parameters (ε=1.0, δ=1e-5)
 python -m ppflx.keys generate dp --output keys/dp/dp_params.json --epsilon 1.0 --delta 1e-5
 
-## Build and start gnark proof service (required for ZKP modes)
-cd zkp_gnark_service
-go build -o gnark_service main.go
-./gnark_service &          # runs in background on :9000
-cd ..
+## ZKP modes: the proof service binary (gnark-gradient-prover) and a local key set.
+## compare.py starts the prover and verifier itself.
+export FL_GNARK_BINARY=/path/to/gnark-gradient-prover/gnark_service
+$FL_GNARK_BINARY setup --keys-dir ~/.cache/ppflx/keys --pk-dir ~/.cache/ppflx/pk   # once
+export FL_ZKP_KEYS_DIR=~/.cache/ppflx/keys FL_ZKP_PK_DIR=~/.cache/ppflx/pk
 ```
 
-#### 2. Run All 10 Modes
+#### 2. Run All 12 Modes
 
 ```bash
-## Automated comparison — all 10 modes sequentially
+## Automated comparison — all 12 registered modes sequentially
 python compare.py --dataset healthcare
 
 ## Or select specific modes
@@ -186,10 +188,10 @@ The comparison provides:
 
 ### Available Comparison Methods
 
-#### 1. Compare Runner (Recommended — all 10 modes)
+#### 1. Compare Runner (Recommended — all 12 modes)
 
 ```bash
-## All 10 modes on healthcare dataset
+## All 12 modes on healthcare dataset
 python compare.py --dataset healthcare
 
 ## Specific subset
@@ -351,7 +353,7 @@ The stored results under `results/` predate the current ZKP protocols, key handl
 
 | Issue | Cause | Fix |
 |-------|-------|-----|
-| ZKP modes fail: `Connection refused :9000` | gnark service not running | `cd zkp_gnark_service && ./gnark_service` |
+| ZKP modes fail: `Connection refused :9000` | gnark service not running | `compare.py` starts both roles; check `FL_GNARK_BINARY`, `FL_ZKP_KEYS_DIR` and `FL_ZKP_PK_DIR` (see the setup above) |
 | `proof_verification = 0.0` in results | Wrong ZKP backend (Pedersen used) | `export FL_ZKP_BACKEND=gnark` |
 | TenSEAL: `scale out of bounds` | CKKS coefficient modulus overflow | Already fixed; ensure `global_scale=2^40` |
 | TFHE accuracy 2–3% lower | Quantization error (int8 weights) | Expected trade-off |
@@ -363,7 +365,7 @@ The stored results under `results/` predate the current ZKP protocols, key handl
 | Port 8081–8084 busy | Docker port conflict | Change ports in `docker-compose.yml` |
 | Blockchain table shows all zeros | Stale ledger from pre-fix run | Re-run; parser correctly unwraps `{"ledger": [...]}` format |
 | `ledger_comparison.json` missing | `--chain-backend none` was set | Re-run without `--chain-backend none` (default is `mock`) |
-| `he_tenseal_zkp_dp` not in default modes | Triple modes absent from mode list | Fixed: all 10 modes in `compare.py` default |
+| A mode missing from a default run | Old hand-written mode list | Fixed: `compare.py` defaults to every mode in the registry |
 | CIFAR `key not found` | Registry used `cifar10` only | Fixed: `@register_dataset("cifar")` alias added |
 | MNIST 0-byte file on parallel download | Race condition in parallel extract | Fixed via `fcntl.flock` exclusive lock in `mnist.py` |
 | Client 2 IndexError on startup | `--number_clients` missing from subprocess | Fixed in `experiment.py` `common_args` |
@@ -435,7 +437,7 @@ export FL_CLIENT_TIMEOUT=7200
 python compare.py --dataset stock
 ```
 
-> Full per-variable tuning details: [ZKP.md § 13 Configuration Reference](ZKP.md) · [FHE.md § HE Environment Variables Reference](FHE.md)
+> Full per-variable tuning details: [ppflx ZKP.md § 12 Configuration](https://github.com/CorpiXo/ppflx/blob/main/docs/ZKP.md#12-configuration) · [FHE.md § HE Environment Variables Reference](FHE.md)
 
 ---
 
@@ -548,26 +550,20 @@ docker compose --profile dp down -v
 	- `scripts/aggregate_statistics.py` — compute mean ± std across repeated runs (different `--seed` values). Scans `YYYYMMDD_HHMMSS` dirs under `--root` and writes `statistical_summary.json` and `statistical_summary.png`.
 	- `scripts/run_repeated_experiments.sh` — convenience wrapper that runs the full experiment loop N times with different seeds and then calls `aggregate_statistics.py` automatically.
 
-### Running All 10 Modes (Without Docker)
+### Running All 12 Modes (Without Docker)
 
-The Python runner supports all 10 modes natively without Docker:
+The Python runner supports all 12 modes natively without Docker. Set up keys,
+the proof service and datasets as in
+[the README's "Benchmark on a new machine"](../README.md#benchmark-on-a-new-machine), then:
 
 ```bash
-cd fl_ppml
-
-## One-time setup
-python -m ppflx.keys generate he_tenseal --overwrite
-python -m ppflx.keys generate dp --overwrite
-python -m ppflx.keys generate zkp --overwrite
-cd zkp_gnark_service && go build -o gnark_service main.go && ./gnark_service & cd ..
-
-## Run all 10 modes
+## Run all 12 modes
 python compare.py --dataset healthcare
 
 ## Results at: results/healthcare/<timestamp>/comparison_report.json
 ```
 
-For gnark setup details see [ZKP.md](ZKP.md).
+For gnark setup details see [ppflx docs/ZKP.md, section 7](https://github.com/CorpiXo/ppflx/blob/main/docs/ZKP.md#7-keys-and-trusted-setup).
 
 ### Troubleshooting
 
@@ -607,8 +603,7 @@ python run_creditcard_comparison.py --modes baseline,he_tenseal,he_concrete_tfhe
 
 #### 3. gnark ZKP Backend (Recommended)
 ```bash
-## Start gnark service first
-cd zkp_gnark_service && ./gnark_service
+## The proof service starts with the run; it needs FL_GNARK_BINARY, FL_ZKP_KEYS_DIR and FL_ZKP_PK_DIR
 
 ## Run comparison with gnark
 export FL_ZKP_BACKEND=gnark

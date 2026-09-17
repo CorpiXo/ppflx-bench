@@ -15,23 +15,146 @@ service in
 
 ## Install
 
+ppflx-bench is one of three repositories: the library
+[ppflx](https://github.com/CorpiXo/ppflx), the proof service
+[gnark-gradient-prover](https://github.com/CorpiXo/gnark-gradient-prover) and this
+harness. [Benchmark on a new machine](#benchmark-on-a-new-machine) sets up all
+three from scratch.
+
+---
+
+## Benchmark on a new machine
+
+The full path for a new developer on Linux, from clone to accepted results.
+Commands after step 2 run from the `ppflx-ws` directory unless they `cd`.
+
+### 1. Prerequisites
+
+- git, with SSH access to the CorpiXo repositories on GitHub
+- Go 1.26 or later (the version in gnark-gradient-prover's `go.mod`)
+- Python 3.12 (Concrete-ML needs < 3.13, Flower 1.36 needs > 3.11); conda is used below
+- A [Kaggle API token](https://www.kaggle.com/docs/api) for the tabular datasets
+
+### 2. Clone the workspace
+
+```bash
+git clone git@github.com:CorpiXo/ppflx-ws.git
+cd ppflx-ws
+scripts/bootstrap.sh        # clones ppflx, gnark-gradient-prover and ppflx-bench into ppflx-ws/
+```
+
+### 3. Build the proof service and make local ZKP keys
+
+```bash
+(cd gnark-gradient-prover && go build -o gnark_service .)
+export FL_GNARK_BINARY=$PWD/gnark-gradient-prover/gnark_service
+
+$FL_GNARK_BINARY setup --keys-dir ~/.cache/ppflx/keys --pk-dir ~/.cache/ppflx/pk
+export FL_ZKP_KEYS_DIR=~/.cache/ppflx/keys
+export FL_ZKP_PK_DIR=~/.cache/ppflx/pk
+```
+
+Setup writes hundreds of MB of proving keys and takes a while. It runs once;
+export the three variables in every shell that runs tests or benchmarks (for
+example from your shell profile).
+
+The keys stay outside every repository and nothing is committed. The pinned
+keys that ship with ppflx have no proving keys on a new machine, and they are
+never re-generated to get started. A local setup is enough for a benchmark:
+one operator runs prover, verifier and clients, so the keys are
+self-consistent; proving and verification cost depend on the circuit and the
+witness, not on the setup randomness; and it has the same single-party trust
+status as the pinned keys ([docs/ZKP.md, section 7](https://github.com/CorpiXo/ppflx/blob/main/docs/ZKP.md#7-keys-and-trusted-setup)).
+
+### 4. Create the Python environment
+
 ```bash
 conda create -n ppflx python=3.12 -y && conda activate ppflx
-pip install -r requirements.txt        # installs ppflx from git
+cd ppflx-bench
+
+# Optional, on machines without a GPU: the CPU build of torch is a much smaller download
+pip install torch==2.3.1 torchvision==0.18.1 --index-url https://download.pytorch.org/whl/cpu
+
+pip install -r requirements.txt       # the harness, and ppflx from git (main)
+pip install -e "../ppflx[tfhe]"       # ppflx from the workspace, with Concrete-ML for the TFHE modes
+pip install pytest
 ```
 
-The ZKP modes need the proof service built and running; `compare.py` starts it
-for you if the binary is on hand:
+Concrete-ML grants no patent rights; see ppflx's `NOTICE` before commercial use.
+
+### 5. Run both test suites
 
 ```bash
-git clone git@github.com:CorpiXo/gnark-gradient-prover.git
-cd gnark-gradient-prover && go build -o gnark_service .
-export FL_GNARK_BINARY=$PWD/gnark_service
+(cd ../ppflx && pytest tests)    # the ZKP tests use FL_GNARK_BINARY with their own small keys
+pytest tests
 ```
 
-Datasets are not part of this repository: `download_datasets.py` fetches the
-image sets, and the tabular ones are placed under `dataset/` (see
-`docs/README.md`).
+### 6. Generate the other keys
+
+From `ppflx-bench/`; they land in `keys/`, which is gitignored.
+
+```bash
+python -m ppflx.keys generate he_tenseal                                  # keys/he_tenseal/
+python -m ppflx.keys generate zkp --output keys/zkp/zkp_params.json
+python -m ppflx.keys generate dp --output keys/dp/dp_params.json
+python -m ppflx.keys generate he_elgamal                                  # keys/he_elgamal/, needs FL_GNARK_BINARY
+python -m ppflx.keys generate he_concrete_tfhe                            # checks Concrete-ML works; nothing is saved, runs make their own keys
+```
+
+### 7. Download the datasets
+
+```bash
+python download_datasets.py --list     # what is present
+python download_datasets.py            # all five into ppflx-bench/dataset/
+```
+
+`creditcard`, `healthcare` and `stock` come from Kaggle: place the token at
+`~/.kaggle/kaggle.json` or set `KAGGLE_USERNAME` and `KAGGLE_KEY`. The full
+stock corpus is about 8 GB; `python download_datasets.py --datasets stock --stock-minimal`
+fetches only the ticker the loader uses. `compare.py` reads `./dataset/` by default.
+
+### 8. Run the benchmark
+
+A short run first checks the whole chain, proof service included:
+
+```bash
+python compare.py --dataset healthcare --modes baseline,zkp,he_elgamal_zkp --rounds 2 --num-clients 2 --max-epochs 1
+```
+
+Then one full run per dataset. Without flags, `compare.py` runs all 12 modes
+with 3 clients, 20 rounds and the dataset's default epochs, over a networked
+SuperLink with one SuperNode per client, and starts the prover and verifier
+itself:
+
+```bash
+python compare.py --dataset healthcare
+python compare.py --dataset creditcard
+python compare.py --dataset stock
+python compare.py --dataset mnist
+python compare.py --dataset cifar
+```
+
+Full ZKP modes on `mnist` and `cifar` are memory-intensive: the harness warns
+that they can run the Python process and the proof service out of memory.
+Keep `FL_ZKP_PARALLELISM=1` (the default) and run nothing else heavy alongside.
+
+### 9. Accept the results
+
+A run counts only if all of these hold:
+
+- `compare.py` finishes without `mode(s) did not produce valid results`, and the
+  summary shows `[OK] OK` for every mode (`[SIM] OK` is simulated, not networked);
+- every entry in each mode's `round_outcomes` is `aggregated` (sampled modes:
+  `committed`, then `aggregated`), with no rejected clients and no Flower failures;
+- every ZKP mode has `"zkp_validation": {"ok": true, ...}`;
+- no `runtime-envs` directory appeared under a run's `.flwr/`, so Flower
+  installed nothing at run time.
+
+Results are in `results/<dataset>/<timestamp>/comparison_report.json`, and
+successful modes are merged into `results/<dataset>/comparison_report.json`.
+Figures come only from these files. Every ZKP round outcome records the SHA-256
+of the key manifest it was verified under (`key_manifest_sha256`), so the keys
+a run used are traceable.
 
 ---
 
@@ -58,9 +181,9 @@ Each mode addresses a distinct threat in the federated learning pipeline.
 | 9 | HE TenSEAL + ZKP + DP | `he_tenseal_zkp_dp` | CKKS + Groth16 (unbound) + DP-SGD | Confidentiality + membership privacy; no integrity |
 | 10 | HE Concrete + ZKP + DP | `he_concrete_tfhe_zkp_dp` | TFHE + Groth16 (unbound) + DP-SGD | Confidentiality + membership privacy; no integrity |
 | 11 | HE ElGamal + ZKP | `he_elgamal_zkp` | Exponential ElGamal (BabyJubJub) + ciphertext-bound Groth16 | Confidentiality + integrity: the upload is range-checked and its update against the encrypted global model is norm-bounded |
-| 12 | HE ElGamal + sampled ZKP | `he_elgamal_zkp_sampled` | As mode 11, proving only server-sampled committed coordinates (commit–challenge, two Flower rounds per round) | Confidentiality + probabilistic integrity: m out-of-bound coordinates detected with probability 1 − C(n−m, s)/C(n, s) ([docs/ZKP.md](docs/ZKP.md#64-he_elgamal_zkp_sampled)) |
+| 12 | HE ElGamal + sampled ZKP | `he_elgamal_zkp_sampled` | As mode 11, proving only server-sampled committed coordinates (commit–challenge, two Flower rounds per round) | Confidentiality + probabilistic integrity: m out-of-bound coordinates detected with probability 1 − C(n−m, s)/C(n, s) ([docs/ZKP.md](https://github.com/CorpiXo/ppflx/blob/main/docs/ZKP.md#64-he_elgamal_zkp_sampled)) |
 
-> **Integrity in modes 7–10.** Their ZKP proof covers a client-chosen plaintext vector and is not bound to the ciphertext the server aggregates, so a client can prove an honest vector and upload a poisoned one (`tests/test_zkp_binding_attack.py`). Only mode 11 binds proofs to the aggregated ciphertexts. Its remaining limitations — a bounded update can still be malicious (the bound caps per-round influence, not direction), a single-party trusted setup, a shared client key, and per-chunk update norms visible to the server — are listed in `ppflx/privacy/he_elgamal_zkp.py`.
+> **Integrity in modes 7–10.** Their ZKP proof covers a client-chosen plaintext vector and is not bound to the ciphertext the server aggregates, so a client can prove an honest vector and upload a poisoned one (`tests/test_zkp_binding_attack.py`). Only mode 11 binds proofs to the aggregated ciphertexts. Its remaining limitations — a bounded update can still be malicious (the bound caps per-round influence, not direction), a single-party trusted setup, a shared client key, and per-chunk update norms visible to the server — are listed in ppflx's `ppflx/privacy/he_elgamal_zkp.py`.
 
 ### Triple Modes (9 & 10)
 
@@ -97,55 +220,29 @@ Omitting `--dirichlet-alpha` uses stratified IID partitioning (default).
 
 ---
 
-## Setup
+## Keys and the proof service
 
-```bash
-conda create -n flEnv python=3.12 -y
-conda activate flEnv
-pip install -r requirements.txt
-```
+[Benchmark on a new machine](#benchmark-on-a-new-machine) covers the whole
+setup. In short, key material for the HE, DP and ElGamal modes is generated
+with `python -m ppflx.keys generate <mode>` into `keys/`, and the ZKP modes need
+the proof service binary and a key set:
 
-### One-Time Key and Parameter Generation
-python compare.py --dataset healthcare --simulation --dp --dp_params keys/dp/dp_params.json --benchmark
-Use the unified key/params CLI implemented in `ppflx.keys` instead of the removed top-level helper scripts.
+| Variable | Points at |
+|---|---|
+| `FL_GNARK_BINARY` | `gnark_service`, built in gnark-gradient-prover |
+| `FL_ZKP_KEYS_DIR` | the key manifest and verifying keys (a local setup: `~/.cache/ppflx/keys`) |
+| `FL_ZKP_PK_DIR` | the proving keys (a local setup: `~/.cache/ppflx/pk`) |
 
-```bash
-cd fl_ppml
-
-# HE keys — TenSEAL CKKS context (example)
-# creates keys/he_tenseal/{secret_context.bin,public_context.bin}
-
-The helper script wraps the current compare runner; if you need to change container ports or datasets, inspect [scripts/run_docker_compare.sh](scripts/run_docker_compare.sh).
-# DP parameters — default ε=1.0, δ=1e-5 (example)
-# creates keys/dp/dp_params.json
-python -m ppflx.keys generate dp --output keys/dp/dp_params.json --epsilon 1.0 --delta 1e-5
-
-# ZKP params (example)
-python -m ppflx.keys generate zkp --output keys/zkp/zkp_params.json
-```
-
-### gnark ZKP Service (required for ZKP modes)
-
-ZKP modes use a Go Groth16 service, split into two roles: clients prove against a **prover**, and the server verifies against a separate **verifier** that holds only verifying keys. Neither role runs setup. Both load pinned keys and refuse to start if the keys are missing or don't match the manifest (see [docs/ZKP.md, section 7](docs/ZKP.md#7-keys-and-trusted-setup)).
-
-```bash
-cd zkp_gnark_service && go build -o gnark_service . && cd ..
-```
-
-The verifying keys and `manifest.json` are committed in `zkp_gnark_service/keys/`. Proving keys (hundreds of MB) are not committed; they live in a local cache. On a fresh checkout they must be regenerated. That run also re-pins the verifying keys, so commit the new `keys/` directory:
-
-```bash
-zkp_gnark_service/gnark_service setup --keys-dir zkp_gnark_service/keys --pk-dir ~/.cache/fl_ppml/gnark_pk --force
-```
+ZKP modes use a Go Groth16 service, split into two roles: clients prove against a **prover**, and the server verifies against a separate **verifier** that holds only verifying keys. Neither role runs setup. Both load the keys in `FL_ZKP_KEYS_DIR` and refuse to start if a key is missing or doesn't match the manifest (see [docs/ZKP.md, section 7](https://github.com/CorpiXo/ppflx/blob/main/docs/ZKP.md#7-keys-and-trusted-setup)).
 
 `compare.py` starts both roles itself. To run them by hand:
 
 ```bash
-zkp_gnark_service/gnark_service serve --role prover --keys-dir zkp_gnark_service/keys --pk-dir ~/.cache/fl_ppml/gnark_pk --port 9000 &
-zkp_gnark_service/gnark_service serve --role verifier --keys-dir zkp_gnark_service/keys --port 9001 &
+$FL_GNARK_BINARY serve --role prover --keys-dir "$FL_ZKP_KEYS_DIR" --pk-dir "$FL_ZKP_PK_DIR" --port 9000 &
+$FL_GNARK_BINARY serve --role verifier --keys-dir "$FL_ZKP_KEYS_DIR" --port 9001 &
 ```
 
-Every proof carries the SHA-256 of the verifying key it was made under. The server rejects any proof whose key isn't the pinned one, and each `round_outcomes` entry records the manifest hash. The setup is **single-party**: whoever ran `setup` could forge proofs. See [docs/ZKP.md, section 7.3](docs/ZKP.md#73-what-a-single-party-setup-does-and-does-not-give) for what a multi-party ceremony would change.
+Every proof carries the SHA-256 of the verifying key it was made under. The server rejects any proof whose key isn't the pinned one, and each `round_outcomes` entry records the manifest hash. The setup is **single-party**: whoever ran `setup` could forge proofs. See [docs/ZKP.md, section 7.3](https://github.com/CorpiXo/ppflx/blob/main/docs/ZKP.md#73-what-a-single-party-setup-does-and-does-not-give) for what a multi-party ceremony would change.
 
 ---
 
@@ -157,7 +254,7 @@ Every proof carries the SHA-256 of the verifying key it was made under. The serv
 python compare.py --dataset healthcare
 ```
 
-The default set is modes 1–10. The ElGamal modes are slower and opt-in:
+The default set is all 12 registered modes. The ElGamal modes are the slowest; to run only them:
 
 ```bash
 python compare.py --dataset healthcare --modes he_elgamal_zkp,he_elgamal_zkp_sampled
@@ -216,7 +313,7 @@ The noise multiplier is derived as σ = √(2 · ln(1.25 / δ)) / ε. The sentin
 
 ### Alpha Sweep — Non-IID Heterogeneity
 
-Runs all 10 modes at α ∈ {0.1, 0.5, 1.0, 10.0} Dirichlet concentration values:
+Runs all 12 modes at α ∈ {0.1, 0.5, 1.0, 10.0} Dirichlet concentration values:
 
 ```bash
 python compare.py --dataset healthcare --simulation --alpha-sweep
@@ -392,43 +489,36 @@ results/
 ## Architecture
 
 ```
-fl_ppml/
-├── compare.py                  ← main CLI: all 10 modes, sweeps, blockchain
-├── pyproject.toml              ← Flower App: ServerApp/ClientApp components and run config
-├── (key generation moved)      ← use `python -m ppflx.keys generate ...` to create HE/DP/ZKP params
-├── requirements.txt
-├── scripts/
-│   ├── aggregate_results.py    ← Docker-run result aggregation
-│   ├── aggregate_statistics.py ← multi-run mean ± std across seeds
-│   └── run_repeated_experiments.sh ← loop: N runs per seed → aggregate
-├── ppflx/                         ← core FL engine
-│   ├── launch.py               ← SuperLink/SuperNode launcher (python -m ppflx_bench.launch)
-│   ├── server.py               ← ServerApp + FedPrivate strategy (Message API)
-│   ├── client.py               ← ClientApp + FlowerClient
-│   ├── runner.py               ← run_mode() entry point
-│   ├── chain.py                ← blockchain audit (mock / web3)
-│   ├── config.py               ← global configuration
-│   ├── experiment.py           ← per-mode experiment driver
-│   ├── datasets/               ← dataset registry, loaders and Dirichlet partitioning
-│   ├── privacy/
-│   │   ├── he_tenseal.py       ← CKKS encryption via TenSEAL
-│   │   ├── he_concrete.py      ← TFHE via Concrete ML
-│   │   ├── zkp_client.py       ← Groth16 proof generation (gnark HTTP)
-│   │   ├── zkp_server.py       ← Groth16 proof verification
-│   │   └── dp.py               ← DP-SGD noise via Opacus
-│   └── compare/
-│       ├── runner.py           ← sweep orchestration
-│       └── report.py           ← result merging + audit summary
-├── zkp_gnark_service/          ← Go service: Groth16 prove + verify on :9000
-├── tests/                      ← pytest suite (sweeps, modes, datasets)
-└── docs/                       ← reference guides (see docs/README.md)
-  ├── README.md               ← guides index
-  ├── FL.md                   ← federated learning theory + Dirichlet + alpha sweep
-  ├── DP.md                   ← DP theory + epsilon sweep + runtime override
-  ├── FHE.md                  ← HE theory + TenSEAL + Concrete ML
-  ├── ZKP.md                  ← ZKP theory + gnark + environment variables
-  └── BC.md                   ← blockchain integration
+ppflx-ws/                          ← workspace; scripts/bootstrap.sh clones the three repositories
+├── ppflx/                         ← the library: privacy modes, FedPrivate strategy, keys CLI, pinned verifying keys
+├── gnark-gradient-prover/         ← Go proof service: Groth16 prover and verifier roles, key setup
+└── ppflx-bench/                   ← this repository
+    ├── compare.py                 ← main CLI: all 12 modes, sweeps, blockchain ledger
+    ├── download_datasets.py       ← fills dataset/ (Kaggle and torchvision)
+    ├── pyproject.toml             ← Flower App: ServerApp/ClientApp components and run config
+    ├── requirements.txt           ← harness dependencies; ppflx as a git dependency
+    ├── ppflx_bench/
+    │   ├── launch.py              ← SuperLink/SuperNode launcher (python -m ppflx_bench.launch)
+    │   ├── app.py                 ← Flower App description; its components live in ppflx
+    │   ├── runner.py              ← run_mode() for scripts/run_comparison.py
+    │   ├── datasets/              ← dataset registry, loaders and Dirichlet partitioning
+    │   └── compare/
+    │       ├── registry.py        ← dataset and mode registries, defaults
+    │       ├── runner.py          ← run_comparison() and sweeps
+    │       ├── experiment.py      ← one mode per run; starts the proof service
+    │       ├── validation.py      ← ZKP run validation (ledger and round outcomes)
+    │       └── report.py          ← summary table
+    ├── scripts/                   ← statistics, repeated runs, calibration, Docker helper
+    ├── tests/                     ← pytest suite for the harness
+    └── docs/                      ← reference guides (see docs/README.md)
+        ├── README.md              ← guides index
+        ├── FL.md                  ← federated learning theory + Dirichlet + alpha sweep
+        ├── DP.md                  ← DP theory + epsilon sweep + runtime override
+        ├── FHE.md                 ← HE theory + TenSEAL + Concrete ML
+        └── BC.md                  ← blockchain integration
 ```
+
+The ZKP guide lives with the library: [ppflx docs/ZKP.md](https://github.com/CorpiXo/ppflx/blob/main/docs/ZKP.md).
 
 ---
 
@@ -439,14 +529,14 @@ This checkout includes the guides index at [docs/README.md](docs/README.md) plus
 | File | Purpose |
 |------|---------|
 | [docs/README.md](docs/README.md) | Guides index for FL, DP, FHE, ZKP, and blockchain topics |
-| [compare.py](compare.py) | Main comparison CLI for the 10 privacy modes |
+| [compare.py](compare.py) | Main comparison CLI for the 12 privacy modes |
 | [ppflx_bench/launch.py](ppflx_bench/launch.py) | Single runs on a local SuperLink and SuperNodes (`python -m ppflx_bench.launch`) |
 | [ppflx_bench/compare/registry.py](ppflx_bench/compare/registry.py) | Dataset and mode registry, prerequisites, defaults |
-| [ppflx/keys/cli.py](ppflx/keys/cli.py) | Key / parameter generation CLI (`python -m ppflx.keys ...`) |
+| [ppflx `ppflx/keys/cli.py`](https://github.com/CorpiXo/ppflx/blob/main/ppflx/keys/cli.py) | Key / parameter generation CLI (`python -m ppflx.keys ...`) |
 | [scripts/aggregate_statistics.py](scripts/aggregate_statistics.py) | Mean ± std aggregation over repeated runs |
 | [scripts/run_repeated_experiments.sh](scripts/run_repeated_experiments.sh) | Convenience loop for repeated runs |
-| [zkp_gnark_service/main.go](zkp_gnark_service/main.go) | gnark prove/verify HTTP service |
-| [tests/test_fl_keys.py](tests/test_fl_keys.py) | Key-generation tests |
+| [gnark-gradient-prover](https://github.com/CorpiXo/gnark-gradient-prover) | gnark prove/verify HTTP service and key setup |
+| [download_datasets.py](download_datasets.py) | Dataset download into `dataset/` |
 
 ---
 
@@ -461,7 +551,7 @@ Current single-proof measurements (Apple M3 Pro, 18 GB):
 | Norm (`zkp`, CKKS/TFHE composites), 256 values per proof | 103,365 | 0.65 s | 2.3–3.6 ms |
 | ElGamal (`he_elgamal_zkp`), 128 coordinates per proof | 1,274,949 | 3.13 s | 7.4 ms |
 
-See [docs/ZKP.md, section 11](docs/ZKP.md#11-performance) for proofs per round, key sizes and end-to-end timings.
+See [docs/ZKP.md, section 11](https://github.com/CorpiXo/ppflx/blob/main/docs/ZKP.md#11-performance) for proofs per round, key sizes and end-to-end timings.
 
 **DP**: The only mode providing a formal (ε, δ)-DP guarantee against membership inference on the published model. HE and ZKP rest on computational hardness assumptions.
 
@@ -504,8 +594,9 @@ All tuning is via environment variables — no code changes required. Variables 
 | `FL_SERVER_GRACE` | `600` | Harness: seconds a run may stay active after every SuperNode exited before it is stopped and the mode marked failed |
 | `FL_ZKP_PROVER_URL` | `http://127.0.0.1:9000` | gnark prover role (clients) |
 | `FL_ZKP_VERIFIER_URL` | `http://127.0.0.1:9001` | gnark verifier role (server) |
-| `FL_ZKP_KEYS_DIR` | `zkp_gnark_service/keys` | Pinned manifest and verifying keys. The circuit sizes (norm chunk, ElGamal coordinates per proof) come from this manifest |
-| `FL_ZKP_PK_DIR` | `~/.cache/fl_ppml/gnark_pk` | Proving-key cache (prover only) |
+| `FL_GNARK_BINARY` | none | Proof service binary built in gnark-gradient-prover; required for ZKP modes and `generate he_elgamal` |
+| `FL_ZKP_KEYS_DIR` | ppflx's packaged pinned keys | Key manifest and verifying keys; a local setup puts them in `~/.cache/ppflx/keys`. The circuit sizes (norm chunk, ElGamal coordinates per proof) come from this manifest |
+| `FL_ZKP_PK_DIR` | `~/.cache/ppflx/pk` | Proving keys (prover only) |
 | `FL_CONCRETE_TFHE_BIT_WIDTH` | `14` | TFHE quantization bit width (2–16). Lower = more accuracy loss |
 | `FL_CONCRETE_TFHE_ADAPTIVE_QUANT` | `0` | `1` = per-layer quantization scale fitting (~0.5–1% accuracy recovery) |
 
@@ -524,9 +615,10 @@ All tuning is via environment variables — no code changes required. Variables 
 
 | Issue | Cause | Fix |
 |-------|-------|-----|
-| ZKP modes: `Connection refused :9000`/`:9001` | gnark prover/verifier not running | see "gnark ZKP Service" above; `compare.py` starts both |
-| `No pinned ZKP key manifest` / `Proving keys … not in` | keys never generated on this machine | run `gnark_service setup` (above) |
-| `HTTP 503 … verifying key` | service started from different keys than the manifest | restart the services from `zkp_gnark_service/keys` |
+| ZKP modes: `Connection refused :9000`/`:9001` | gnark prover/verifier not running | see "Keys and the proof service" above; `compare.py` starts both |
+| `FL_GNARK_BINARY is not set` | proof service not built or not exported | build gnark-gradient-prover and export `FL_GNARK_BINARY` ([step 3](#3-build-the-proof-service-and-make-local-zkp-keys)) |
+| `No ZKP key manifest` / `Proving keys … not in` | no local key set, or the variables are not exported | run the local setup and export `FL_ZKP_KEYS_DIR` and `FL_ZKP_PK_DIR` ([step 3](#3-build-the-proof-service-and-make-local-zkp-keys)); never re-key the pinned keys |
+| `HTTP 503 … verifying key` | service started from different keys than the manifest | stop the services on :9000/:9001 and rerun; `compare.py` starts them from `FL_ZKP_KEYS_DIR` |
 | `proof_verification = 0.0` in results | Pedersen backend selected | `export FL_ZKP_BACKEND=gnark` |
 | TenSEAL `scale out of bounds` | CKKS coefficient overflow | Already fixed; ensure `global_scale=2^40` |
 | TFHE accuracy 2–3% lower | int8 quantization error | Expected trade-off |
@@ -539,7 +631,7 @@ All tuning is via environment variables — no code changes required. Variables 
 | `port 1909x is in use` from `ppflx_bench.launch` | a SuperLink or SuperNode from an interrupted run is still running | stop it (`lsof -ti tcp:19093`), or wait for the other run to finish; runs use fixed ports |
 | Blockchain table shows all zeros | Stale ledger from pre-fix run | Re-run; parser unwraps `{"ledger": [...]}` format correctly |
 | `ledger_comparison.json` missing | `--chain-backend none` was set | Re-run without `--chain-backend none` |
-| `he_tenseal_zkp_dp` not found | Missing from mode list | Fixed: all 10 modes in `compare.py` default |
+| A mode missing from a default run | Old hand-written mode list | Fixed: `compare.py` defaults to every mode in the registry |
 | CIFAR `key not found` | Registry used `cifar10` only | Fixed: `@register_dataset("cifar")` alias added |
 | MNIST 0-byte file on parallel download | Race condition in parallel extract | Fixed via `fcntl.flock` exclusive lock |
 | `node partition … does not match num-clients` | SuperNode `--node-config` disagrees with the run's `num-clients` | start SuperNodes with `partition-id=<i> num-partitions=<num-clients>` |

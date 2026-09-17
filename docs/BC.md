@@ -1,6 +1,6 @@
 # Blockchain Integration: ZKP, FHE, Federated Learning, and Distributed Data
 
-> **Navigation**: [README.md](README.md) | [FL.md](FL.md) | [FHE.md](FHE.md) | [ZKP.md](ZKP.md) | [DP.md](DP.md)
+> **Navigation**: [README.md](README.md) | [FL.md](FL.md) | [FHE.md](FHE.md) | [ZKP.md](https://github.com/CorpiXo/ppflx/blob/main/docs/ZKP.md) | [DP.md](DP.md)
 
 ## Table of Contents
 
@@ -762,7 +762,7 @@ Sustaining participation in decentralized FL requires economic incentives that f
 
 ## 15. Implementation in This Framework
 
-This section describes what is actually built in `fl_ppml/fl/` — moving from theory to running code.
+This section describes what is actually built in [ppflx](https://github.com/CorpiXo/ppflx) (`ppflx/`) — moving from theory to running code.
 
 ### Module Overview
 
@@ -953,4 +953,4 @@ The `Web3Chain` class uses `web3.py` and the same `commit_model` / `anchor_proof
 
 ---
 
-*This document is part of the federated learning framework documentation. For the ZKP implementation details (gnark, Groth16, Pedersen commitments), see [ZKP.md](ZKP.md). For the FHE implementation details (TenSEAL/CKKS and Concrete ML/TFHE), see [FHE.md](FHE.md). For differential privacy and the Opacus integration, see [DP.md](DP.md). For the overall framework architecture and mode comparison, see [README.md](README.md).*
+*This document is part of the federated learning framework documentation. For the ZKP implementation details (gnark, Groth16, Pedersen commitments), see [ppflx docs/ZKP.md](https://github.com/CorpiXo/ppflx/blob/main/docs/ZKP.md). For the FHE implementation details (TenSEAL/CKKS and Concrete ML/TFHE), see [FHE.md](FHE.md). For differential privacy and the Opacus integration, see [DP.md](DP.md). For the overall framework architecture and mode comparison, see [README.md](README.md).*

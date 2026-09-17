@@ -15,22 +15,30 @@ contributor. You keep the copyright in your own work.
 ## Development setup
 
 Python 3.12 is required (Concrete-ML needs < 3.13, Flower 1.36 needs > 3.11).
+The full setup, including the proof service and local ZKP keys, is in
+[README.md, "Benchmark on a new machine"](README.md#benchmark-on-a-new-machine).
+In short, from a `ppflx-ws` workspace:
 
 ```bash
 conda create -n ppflx python=3.12 -y && conda activate ppflx
-pip install -r requirements.txt
-python -m ppflx.keys generate he_tenseal        # HE keys
+cd ppflx-bench
+pip install -r requirements.txt           # ppflx from git
+pip install -e "../ppflx[tfhe]" pytest     # or develop against the workspace checkout
+python -m ppflx.keys generate he_tenseal
 python -m ppflx.keys generate dp --output keys/dp/dp_params.json
-cd zkp_gnark_service && go build -o gnark_service .   # proof service
+(cd ../gnark-gradient-prover && go build -o gnark_service .)
+export FL_GNARK_BINARY=$(realpath ../gnark-gradient-prover/gnark_service)
 ```
 
 ## Before opening a pull request
 
-1. `pytest tests` passes (the ZKP tests skip without the proof service binary).
-2. `go test ./...` passes in `zkp_gnark_service/` if you touched Go code.
-3. If you changed a privacy mode, the strategy or the harness, run the modes
-   your change affects end to end and say so in the pull request:
+1. `pytest tests` passes.
+2. If you changed the harness, run the modes your change affects end to end and
+   say so in the pull request:
    `python compare.py --dataset healthcare --modes <modes> --rounds 2 --num-clients 2`
+3. Library changes belong in ppflx and proof-service changes in
+   gnark-gradient-prover; a change across repositories lands in that order,
+   one pull request per repository.
 4. New behaviour in a security-relevant path comes with a test that fails
    without your change.
 
