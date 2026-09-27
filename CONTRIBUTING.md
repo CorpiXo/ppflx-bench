@@ -17,13 +17,13 @@ contributor. You keep the copyright in your own work.
 Python 3.12 is required (Concrete-ML needs < 3.13, Flower 1.36 needs > 3.11).
 The full setup, including the proof service and local ZKP keys, is in
 [README.md, "Benchmark on a new machine"](README.md#benchmark-on-a-new-machine).
-In short, from a `ppflx-ws` workspace:
+In short, with the three checkouts side by side in one directory:
 
 ```bash
 conda create -n ppflx python=3.12 -y && conda activate ppflx
 cd ppflx-bench
 pip install -r requirements.txt           # ppflx from git
-pip install -e "../ppflx[tfhe]" pytest     # or develop against the workspace checkout
+pip install -e "../ppflx[tfhe]" pytest     # or develop against the checkout beside this one
 python -m ppflx.keys generate he_tenseal
 python -m ppflx.keys generate dp --output keys/dp/dp_params.json
 (cd ../gnark-gradient-prover && go build -o gnark_service .)
