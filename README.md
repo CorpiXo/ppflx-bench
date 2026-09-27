@@ -26,7 +26,8 @@ three from scratch.
 ## Benchmark on a new machine
 
 The full path for a new developer on Linux, from clone to accepted results.
-Commands after step 2 run from the `ppflx-ws` directory unless they `cd`.
+Commands after step 2 run from the directory that holds the three checkouts
+unless they `cd`.
 
 ### 1. Prerequisites
 
@@ -35,13 +36,17 @@ Commands after step 2 run from the `ppflx-ws` directory unless they `cd`.
 - Python 3.12 (Concrete-ML needs < 3.13, Flower 1.36 needs > 3.11); conda is used below
 - A [Kaggle API token](https://www.kaggle.com/docs/api) for the tabular datasets
 
-### 2. Clone the workspace
+### 2. Clone the three repositories side by side
 
 ```bash
-git clone git@github.com:CorpiXo/ppflx-ws.git
-cd ppflx-ws
-scripts/bootstrap.sh        # clones ppflx, gnark-gradient-prover and ppflx-bench into ppflx-ws/
+mkdir ppflx-stack && cd ppflx-stack
+git clone git@github.com:CorpiXo/ppflx.git
+git clone git@github.com:CorpiXo/gnark-gradient-prover.git
+git clone git@github.com:CorpiXo/ppflx-bench.git
 ```
+
+The steps below assume this layout, with the three checkouts in one directory;
+the relative paths (`../ppflx`) depend on it.
 
 ### 3. Build the proof service and make local ZKP keys
 
@@ -76,7 +81,7 @@ cd ppflx-bench
 pip install torch==2.3.1 torchvision==0.18.1 --index-url https://download.pytorch.org/whl/cpu
 
 pip install -r requirements.txt       # the harness, and ppflx from git (main)
-pip install -e "../ppflx[tfhe]"       # ppflx from the workspace, with Concrete-ML for the TFHE modes
+pip install -e "../ppflx[tfhe]"       # ppflx from the checkout beside this one, with Concrete-ML for the TFHE modes
 pip install pytest
 ```
 
@@ -489,7 +494,7 @@ results/
 ## Architecture
 
 ```
-ppflx-ws/                          ← workspace; scripts/bootstrap.sh clones the three repositories
+ppflx-stack/                       ← any directory holding the three checkouts side by side
 ├── ppflx/                         ← the library: privacy modes, FedPrivate strategy, keys CLI, pinned verifying keys
 ├── gnark-gradient-prover/         ← Go proof service: Groth16 prover and verifier roles, key setup
 └── ppflx-bench/                   ← this repository
