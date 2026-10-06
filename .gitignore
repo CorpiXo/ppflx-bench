@@ -251,6 +251,7 @@ results_*.csv
 # unignore them first.
 results/**
 !results/**/
+!results/README.md
 !results/*/comparison_report.json
 !results/*/keep_*/**/*.json
 !results/*/keep_*/comparison.png
