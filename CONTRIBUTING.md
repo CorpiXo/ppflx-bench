@@ -22,7 +22,7 @@ In short, with the three checkouts side by side in one directory:
 ```bash
 conda create -n ppflx python=3.12 -y && conda activate ppflx
 cd ppflx-bench
-pip install -r requirements.txt           # ppflx from git
+pip install -r requirements.txt           # ppflx v0.9.0 from git
 pip install -e "../ppflx[tfhe]" pytest     # or develop against the checkout beside this one
 python -m ppflx.keys generate he_tenseal
 python -m ppflx.keys generate dp --output keys/dp/dp_params.json
