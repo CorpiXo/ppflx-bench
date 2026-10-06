@@ -9,6 +9,7 @@ authors:
   - name: "CorpiXo"
 license: Apache-2.0
 version: 0.9.0
+date-released: "2026-10-06"
 repository-code: "https://github.com/CorpiXo/ppflx-bench"
 abstract: >-
   A benchmark harness for ppflx, a privacy-preserving federated learning
