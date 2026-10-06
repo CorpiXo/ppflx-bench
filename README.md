@@ -10,9 +10,9 @@ The library lives in [ppflx](https://github.com/CorpiXo/ppflx) and the proof
 service in
 [gnark-gradient-prover](https://github.com/CorpiXo/gnark-gradient-prover).
 
-> **Results are not published yet.** The figures from before the Flower 1.36
-> migration were produced by older protocols and key handling, so they were not
-> carried over. `results/` will be filled by the next full benchmark run.
+> **Results:** all twelve modes on healthcare, creditcard, stock and MNIST, with
+> 3 clients and 10 rounds over a networked SuperLink, are in
+> [`results/`](results/README.md), which summarises them and describes the setup.
 
 ## Install
 
@@ -183,6 +183,11 @@ successful modes are merged into `results/<dataset>/comparison_report.json`.
 Figures come only from these files. Every ZKP round outcome records the SHA-256
 of the key manifest it was verified under (`key_manifest_sha256`), so the keys
 a run used are traceable.
+
+Only accepted runs are committed: rename the run directory to
+`results/<dataset>/keep_<timestamp>/`, and git tracks its JSON and comparison
+figure along with the dataset's merged report. Everything else under `results/`
+is ignored.
 
 ---
 
@@ -570,7 +575,7 @@ This checkout includes the guides index at [docs/README.md](docs/README.md) plus
 
 ## Performance Reference
 
-The stored results under `results/` were produced before the current ZKP protocols, key handling and fail-closed checks, so their timings and bandwidth figures describe older code and are not reproduced here. They will be regenerated with the current code.
+End-to-end timings, bandwidth and accuracy for every mode are in [`results/README.md`](results/README.md), from runs on an Intel Core i5-1035G1 laptop CPU.
 
 Current single-proof measurements (Apple M3 Pro, 18 GB):
 

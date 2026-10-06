@@ -1,0 +1,174 @@
+{
+  "ledger": [
+    {
+      "block": 1,
+      "timestamp": 1791097191.4846036,
+      "type": "ModelCommit",
+      "round": 1,
+      "model_hash": "0x22aee024eb08553f855650c181c9fa6905d2f97802ab626cdf7f15be1cb8916e",
+      "client_hashes": [
+        "0x56e0e24100858020dd212689748460669dceec54695c40ca5d7ab12a2dbb1dca",
+        "0xc53c2cf614d81010db424aeaf34b951827e397b3f49c0b4ff7dc73a0afa17518",
+        "0x54d4671ff6a4b1b38098e735b92e2a6f8cd54f06eddd38e5e526b4de812f34b8"
+      ],
+      "num_clients": 3,
+      "metadata": {
+        "mode": "he_tenseal"
+      },
+      "tx": "0x0000000000000000000000000000000000000000000000000000000000000001"
+    },
+    {
+      "block": 2,
+      "timestamp": 1791097213.1811385,
+      "type": "ModelCommit",
+      "round": 2,
+      "model_hash": "0x30af74a4a2b4e464d401e536c6064d5e746eb75bf95eb855d4c73ade65060b93",
+      "client_hashes": [
+        "0x61451c5a5b5dd549935bf09b53f49c07d6790f6f1d0883ec2cc78361c3979871",
+        "0x2bf801b4830a107dbd6abde7268c6bfa428ab2ae4d1a449f59b5522c6b21fe00",
+        "0x0c91b5403b3b745160f8e2d38cf0b5cb339017b7abb1bb40141e68d19d0984ba"
+      ],
+      "num_clients": 3,
+      "metadata": {
+        "mode": "he_tenseal"
+      },
+      "tx": "0x0000000000000000000000000000000000000000000000000000000000000002"
+    },
+    {
+      "block": 3,
+      "timestamp": 1791097234.9409482,
+      "type": "ModelCommit",
+      "round": 3,
+      "model_hash": "0x71f3c4639a26bd381fa7e8d3d039bfd3bc4fbe977fab916faf9c8bc50dc5bed3",
+      "client_hashes": [
+        "0x0395b6cf11ba4e078f83829096bcb076900689247749c5cf3d9c558885f1adb0",
+        "0xae0dac3946b6ce3c5e1a7c167bb6145f0e8287683c4c2ddfb4a90c992f627024",
+        "0x6c1aa8cc73aaf1c3fa56c126c73eea070404e11b470ae3c3fd336c8aba405ec7"
+      ],
+      "num_clients": 3,
+      "metadata": {
+        "mode": "he_tenseal"
+      },
+      "tx": "0x0000000000000000000000000000000000000000000000000000000000000003"
+    },
+    {
+      "block": 4,
+      "timestamp": 1791097259.9175255,
+      "type": "ModelCommit",
+      "round": 4,
+      "model_hash": "0xb7ed3d8243bcaa7bebcc8b3b32ea8e4efadcb186a3eebeae3b215673bd2b2914",
+      "client_hashes": [
+        "0x9e89a562c08899d454e028118136bc330ff1ab1e8f3b33ed351345393e3f1e75",
+        "0xe72d93efc29e31f1cc4fb7fc493c688ae5c78a276289f00640bc4f86a55d76b5",
+        "0x940086b5fc96543834f47f817fcc7f3f9da7b4a2bfb346e8329f1636cb2d8256"
+      ],
+      "num_clients": 3,
+      "metadata": {
+        "mode": "he_tenseal"
+      },
+      "tx": "0x0000000000000000000000000000000000000000000000000000000000000004"
+    },
+    {
+      "block": 5,
+      "timestamp": 1791097281.7996495,
+      "type": "ModelCommit",
+      "round": 5,
+      "model_hash": "0xebddd829a7678ec422378914acd3de119f98aeda00955680122972708f4bb7e6",
+      "client_hashes": [
+        "0xae3c6907046e2b8790cea111be38d8cfc253f893c0c3da0b294a6d8d61f4c772",
+        "0xc5274d80a78eb12b702981c9f467f7327dd819619fac2beaf7f434b9e10fbb94",
+        "0x4a36447e1a341bf073bea393c5e93a77637dbc6db59ee0ade330608215f71fd9"
+      ],
+      "num_clients": 3,
+      "metadata": {
+        "mode": "he_tenseal"
+      },
+      "tx": "0x0000000000000000000000000000000000000000000000000000000000000005"
+    },
+    {
+      "block": 6,
+      "timestamp": 1791097303.575298,
+      "type": "ModelCommit",
+      "round": 6,
+      "model_hash": "0x40c1d4a78093b6a8990ac63a19508a78c8cda16e6c27767e56c3e90efc8cb599",
+      "client_hashes": [
+        "0xddf54192a723a6d54e1df35b5c5b1ed8a00fda53b5c2f6ec8035c55b5b4f090c",
+        "0x854c8ee8f77e297c3327bd9ac817c582d751f8b498850e29adc67fec28546099",
+        "0x7f1df70039e7f435d61952e3c0d20605ac643faf0c88f89d14bd01df25d0d46b"
+      ],
+      "num_clients": 3,
+      "metadata": {
+        "mode": "he_tenseal"
+      },
+      "tx": "0x0000000000000000000000000000000000000000000000000000000000000006"
+    },
+    {
+      "block": 7,
+      "timestamp": 1791097325.3801162,
+      "type": "ModelCommit",
+      "round": 7,
+      "model_hash": "0x0e4350d7d2de8d2e7cf8396596a55dd2854b8d621542a4e7510ad92a9a210632",
+      "client_hashes": [
+        "0x6e85b6085df24cf3225de2883a1732aa59c79557b6798579189b8b87fc646d8a",
+        "0x034db5eb7c31f8821839195f6ff439e623155c96cb9123bbc2f176c236795dbe",
+        "0x048370bd4eceeeb6ef8475c647839f50dd311b148c9a2eff84f88e5bf15f4071"
+      ],
+      "num_clients": 3,
+      "metadata": {
+        "mode": "he_tenseal"
+      },
+      "tx": "0x0000000000000000000000000000000000000000000000000000000000000007"
+    },
+    {
+      "block": 8,
+      "timestamp": 1791097347.0912564,
+      "type": "ModelCommit",
+      "round": 8,
+      "model_hash": "0x6b84f39a990d764c624fd4c3f8d9374099a964bd09c6ca744a231919af5f1449",
+      "client_hashes": [
+        "0x3ad231f7d8880cb98315b1c7ce2c4a7592ffc2ee10cccc186d994343b1ad33e8",
+        "0xdfcdb2e535786c4268d5d1c09be7dd43785b3681fdca3029ac601f638de4f11a",
+        "0x83b9e59e0c4cf1c120531160cbb66151f2505c3ab351f5e3ccd95e692dda7d00"
+      ],
+      "num_clients": 3,
+      "metadata": {
+        "mode": "he_tenseal"
+      },
+      "tx": "0x0000000000000000000000000000000000000000000000000000000000000008"
+    },
+    {
+      "block": 9,
+      "timestamp": 1791097371.8510654,
+      "type": "ModelCommit",
+      "round": 9,
+      "model_hash": "0xa8546f14f09cce775fcf1f8d291bda259743e8529c5ebe994f599b0e0bc69c76",
+      "client_hashes": [
+        "0x7c6fa590064e6c6c2b66d520bd55d3873f475c70a925a387ceaf9b69ff4d93c7",
+        "0x589998f0174a89d33151e3fa94e5bf98ec03fcfdec24f60ce89164f019ed782b",
+        "0x44c7a46293e16a8a0e2132462794663d9e118a9f5fe96aacee28c32a96399bd2"
+      ],
+      "num_clients": 3,
+      "metadata": {
+        "mode": "he_tenseal"
+      },
+      "tx": "0x0000000000000000000000000000000000000000000000000000000000000009"
+    },
+    {
+      "block": 10,
+      "timestamp": 1791097396.671156,
+      "type": "ModelCommit",
+      "round": 10,
+      "model_hash": "0xfad711116bcea7aa77f0c632c4378beb804eeeecee78767cf28eb9b3922ad88e",
+      "client_hashes": [
+        "0xb8513d78e1228ce800d96f6480be76e733b9b38c019afbef452b9768793cbb80",
+        "0x0fa55d2ef22b4ab303f896614d407a87f52a008dbbd930c71128bba4a6eedb8d",
+        "0xaea13c8096886e946e48246aa40dda324831f7280b60ec802f226f5b571eab1b"
+      ],
+      "num_clients": 3,
+      "metadata": {
+        "mode": "he_tenseal"
+      },
+      "tx": "0x000000000000000000000000000000000000000000000000000000000000000a"
+    }
+  ]
+}

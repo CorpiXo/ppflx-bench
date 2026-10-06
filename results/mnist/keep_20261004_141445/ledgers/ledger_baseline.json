@@ -1,0 +1,174 @@
+{
+  "ledger": [
+    {
+      "block": 1,
+      "timestamp": 1791112570.2576673,
+      "type": "ModelCommit",
+      "round": 1,
+      "model_hash": "0x051a484aae2c5c3ba4b2cbaf554b0708088f2fe1a75af1faf8a92b0bd6fc2976",
+      "client_hashes": [
+        "0x644b0366177f7cb3fbc298f58ff0a4c1e57ccde52e0416f8c4790b621d8714f6",
+        "0x5865eaac78de8b30aef16610f803f4f7068a33d954badbb34145ad54277ff2fe",
+        "0xc94ce2762cfa7a48c5b9f49a12433f53166e12e9521fde91b1e0fe3ef8f315c4"
+      ],
+      "num_clients": 3,
+      "metadata": {
+        "mode": "baseline"
+      },
+      "tx": "0x0000000000000000000000000000000000000000000000000000000000000001"
+    },
+    {
+      "block": 2,
+      "timestamp": 1791112647.360083,
+      "type": "ModelCommit",
+      "round": 2,
+      "model_hash": "0x792714f0fa42f4cf80c86f8542123a660eb7bd3e1892e945d827a598f3ba809d",
+      "client_hashes": [
+        "0x094c1d6629fb7291e7784fc82193c80877d831c088622a5f678eff97f7ccf4d0",
+        "0x96f1fe098f8922150119a844f6e950d34ad3633e2c5fab0b2497ab765da03a20",
+        "0xa6985f0da312a94dc1b15348cdb9b43c72f6bb15aec8ead98b40ca5c2d631f3d"
+      ],
+      "num_clients": 3,
+      "metadata": {
+        "mode": "baseline"
+      },
+      "tx": "0x0000000000000000000000000000000000000000000000000000000000000002"
+    },
+    {
+      "block": 3,
+      "timestamp": 1791112724.6516676,
+      "type": "ModelCommit",
+      "round": 3,
+      "model_hash": "0x55524983efc558826bf1382e5b8d2c16aa29b2376f128352eac477b7ca7afe91",
+      "client_hashes": [
+        "0xa45f9d934aaf933b37ac0aef3d6ffe89b9eb9e10c9b8edb02162bcdba39dcd20",
+        "0xf35508158ab467a21f8eeeb950e4bcae2903cb84b0e3a641a0b01995a169ac0e",
+        "0xa53096c59fba098cf7f1a045e3f3c3f350ab332cb997b9e233b0d70d3af1a8fd"
+      ],
+      "num_clients": 3,
+      "metadata": {
+        "mode": "baseline"
+      },
+      "tx": "0x0000000000000000000000000000000000000000000000000000000000000003"
+    },
+    {
+      "block": 4,
+      "timestamp": 1791112799.1361942,
+      "type": "ModelCommit",
+      "round": 4,
+      "model_hash": "0xa347cb282c58cb5c5f866f63eccbcd9fdd37ef0f1b702337c0837b1d72b64955",
+      "client_hashes": [
+        "0x77872c50238fc157397f8d66bf9970836d5f2ac068297f38be65713e774f586f",
+        "0x0d85fb58dee78a83749a0c91f55cf0b574765a35b45eccee2411403c37f45a07",
+        "0xd8cf4d24d2477d932c2f4cfafd92d4c7493f8d2294f6290058c3be790534e6b7"
+      ],
+      "num_clients": 3,
+      "metadata": {
+        "mode": "baseline"
+      },
+      "tx": "0x0000000000000000000000000000000000000000000000000000000000000004"
+    },
+    {
+      "block": 5,
+      "timestamp": 1791112879.4841657,
+      "type": "ModelCommit",
+      "round": 5,
+      "model_hash": "0xe8e356fb86d9e1bd4e0c55938d9fe3cd93237aed6f18e34e96cfb7d712eef39a",
+      "client_hashes": [
+        "0x0dd459a3660590ebe7b346dfee734c86147e35d38362e262be86d9ebfe625a2d",
+        "0x8006454aa24219195858d4f7ac124c2a42b05287fa867ac5a4e589f6273100c3",
+        "0xfd94bc6dd55c9014ed0e2183ce136f182de7a3cd8669c7802aa1934f794bcc96"
+      ],
+      "num_clients": 3,
+      "metadata": {
+        "mode": "baseline"
+      },
+      "tx": "0x0000000000000000000000000000000000000000000000000000000000000005"
+    },
+    {
+      "block": 6,
+      "timestamp": 1791112956.8109057,
+      "type": "ModelCommit",
+      "round": 6,
+      "model_hash": "0xc67b2767f152e8921629abbc83b700a755f7e3fc5f1bb39b9e1c7893c83bf162",
+      "client_hashes": [
+        "0x26d3507c832ff3c52857b16532290b71caaeb3d2c4b5ee4043d3704bbdf52470",
+        "0xb9c29a3e48957c77bc571a4d3d3e5d87409d4209edfb80c4908e90169bce0db8",
+        "0x00e393093e6f793be0c5c36426d33d4676f41ead7b575fa6b375b21e15f2622a"
+      ],
+      "num_clients": 3,
+      "metadata": {
+        "mode": "baseline"
+      },
+      "tx": "0x0000000000000000000000000000000000000000000000000000000000000006"
+    },
+    {
+      "block": 7,
+      "timestamp": 1791113034.23205,
+      "type": "ModelCommit",
+      "round": 7,
+      "model_hash": "0xaa709fa5c3fbdabe31060a17c4b83d51c9c07888fa17845579f44b82b067bc12",
+      "client_hashes": [
+        "0xfa69b16d239f34fd12e7fcf1aed35300afd56f0847efa932f101493dd7e74a14",
+        "0x8fc96c8d17cd24dd282af5fef76fc947d559222805ea7ca0939dd70c6ad01e74",
+        "0x9a14f06442885b6053ff84a7e965f94608acad8c81f8d18cec18c061e63f5192"
+      ],
+      "num_clients": 3,
+      "metadata": {
+        "mode": "baseline"
+      },
+      "tx": "0x0000000000000000000000000000000000000000000000000000000000000007"
+    },
+    {
+      "block": 8,
+      "timestamp": 1791113108.3906212,
+      "type": "ModelCommit",
+      "round": 8,
+      "model_hash": "0x12ab52ce7293a9bc5d2b1bffcaac7c1488345a8c632c5addd0352f0e21294f64",
+      "client_hashes": [
+        "0xe7990e4c2631e148619bb9f48f9ac18fedaa2f89bc560ff887030e33aab0510a",
+        "0x0f043dc9788c4906c277e97005b6d39f889ffaecc3ea187d64a98893458bb4e7",
+        "0xab47e72a4713eb56fd5042d8d07fdabf74cdf3ee8f2022c46b0d59f5cd8a87ea"
+      ],
+      "num_clients": 3,
+      "metadata": {
+        "mode": "baseline"
+      },
+      "tx": "0x0000000000000000000000000000000000000000000000000000000000000008"
+    },
+    {
+      "block": 9,
+      "timestamp": 1791113182.9296894,
+      "type": "ModelCommit",
+      "round": 9,
+      "model_hash": "0x4bfe1723467368b343a684f5be36d15b412ff86f75f01b2689886292713f0bfd",
+      "client_hashes": [
+        "0x4670986aaf2b0c67f9d2fbc232fa224813afc860b5fe8e20f77c74794bb02c73",
+        "0x767c92c042e340034b95921c47a15d0bb1213d055cc0e4911dac6e731a74a21b",
+        "0xe16edad51a5a36d6fc713494268871848e76f6deb28e6b686ed37a85169999f9"
+      ],
+      "num_clients": 3,
+      "metadata": {
+        "mode": "baseline"
+      },
+      "tx": "0x0000000000000000000000000000000000000000000000000000000000000009"
+    },
+    {
+      "block": 10,
+      "timestamp": 1791113254.1694071,
+      "type": "ModelCommit",
+      "round": 10,
+      "model_hash": "0xe05819f1b47400433db128b130a028ba962e65850985132ba379b659e15b528a",
+      "client_hashes": [
+        "0x106b3426f91a6b7b4a0bd26cee147037e6bb5b4b8b42e7da027de131b30b2890",
+        "0x8bd401ca45aad9394de88e58785a62a187c6b4216230b03ac938d754bc448ef6",
+        "0x3f15f7b8b93e1d6473661596a6414dc1ef3728f721e70116696c9b6d01074650"
+      ],
+      "num_clients": 3,
+      "metadata": {
+        "mode": "baseline"
+      },
+      "tx": "0x000000000000000000000000000000000000000000000000000000000000000a"
+    }
+  ]
+}
