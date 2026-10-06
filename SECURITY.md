@@ -11,9 +11,11 @@ disclosure timeline with you. Please do not open a public issue first.
 
 ## What is and is not a security boundary
 
-These are properties the project claims, and deliberately does not claim.
-Reports that these documented limitations exist are not vulnerabilities;
-reports that a claimed property fails are.
+These are properties the project claims, and deliberately does not claim; the
+privacy modes themselves are implemented in
+[ppflx](https://github.com/CorpiXo/ppflx). Reports that these documented
+limitations exist are not vulnerabilities; reports that a claimed property
+fails are.
 
 **Claimed:**
 
@@ -21,9 +23,9 @@ reports that a claimed property fails are.
   is bounded, proved with Groth16 over every coordinate.
 - `he_elgamal_zkp` and `he_elgamal_zkp_sampled`: the proof is bound to the
   ciphertext the server aggregates.
-- HE modes: the server sees only ciphertexts of client updates.
-- `dp`: an (epsilon, delta) differential-privacy guarantee for the published
-  model, under the recorded parameters.
+- HE modes: the server sees only ciphertexts of client updates, plus metadata
+  (the number of clients, ciphertext sizes, sample counts in the CKKS and
+  ElGamal modes, and per-chunk update norms in the ElGamal modes).
 
 **Not claimed:**
 
@@ -37,5 +39,13 @@ reports that a claimed property fails are.
 - An update within the norm bound can still be malicious: the bound limits a
   client's per-round influence, not the direction of its update.
 - `zkp_sampled` is a benchmark configuration over plaintext updates.
+- HE does not hide updates from other clients: all clients share one secret key.
+- The DP modes (`dp` and the `_dp` composites) add noise during training but give
+  no end-to-end (epsilon, delta) guarantee: they clip each batch's mean gradient
+  rather than each example's and do no privacy accounting across steps or rounds
+  ([docs/DP.md](docs/DP.md)).
+- The audit ledger records the server's own statements; it does not show that
+  proofs verified or that aggregation was correct ([docs/BC.md](docs/BC.md)).
 
-See `docs/ZKP.md` for the protocols and their limitations in full.
+See ppflx's [docs/ZKP.md](https://github.com/CorpiXo/ppflx/blob/main/docs/ZKP.md)
+for the protocols and their limitations in full.

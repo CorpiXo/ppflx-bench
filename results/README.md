@@ -21,15 +21,17 @@ reports and adds the per-mode properties, figures and per-proof costs.
 - 3 clients (one SuperNode each) over a networked SuperLink, 10 rounds, seed 42,
   IID partitions; every client trains and evaluates every round.
 - Local epochs and batch size: healthcare 5 and 16, creditcard 5 and 32, stock 5
-  and 16, mnist 3 and 64; learning rate 0.001; CPU.
+  and 16, mnist 3 and 64; SGD with learning rate 0.001 and momentum 0.9; CPU.
 - DP: ε = 1.0, δ = 1e-5, Gaussian mechanism, noise multiplier 4.84, clipping norm 1.0.
+  ε here sets the noise; it is not an end-to-end (ε, δ) guarantee
+  ([docs/DP.md](../docs/DP.md)).
 - ZKP: Groth16 from gnark-gradient-prover under a local single-party key setup;
   every ZKP round records the key manifest SHA-256
   (`95279d9c3fc2c05dec1aa102037109b18ff9ddb353a3153da4a162f34bbc4ba9` in all runs).
   Sampled modes prove 10% of coordinates.
 - TFHE: 14-bit quantization over [-5, 5]; real TFHE on mnist (`FL_CONCRETE_TFHE_FORCE_REAL=1`).
-- Code: ppflx-bench and ppflx at the commits that add these results, gnark-gradient-prover
-  `3057802`; Python 3.12, Flower 1.36.0, PyTorch 2.3.1 (CPU).
+- Code: ppflx `80d85e9`, gnark-gradient-prover `3057802`, ppflx-bench `404983b`
+  (the commit that added these results); Python 3.12, Flower 1.36.0, PyTorch 2.3.1 (CPU).
 - Machine: Intel Core i5-1035G1 (4 cores, 8 threads), 23 GB RAM, Linux.
 
 Every run met the acceptance criteria in the README: every mode succeeded, every
@@ -38,13 +40,15 @@ passed in every round of every ZKP mode, and Flower installed nothing at run tim
 
 ## Summary
 
-Test metrics are means over the 10 evaluated rounds across all clients' test
-partitions, not final-round scores. Times are means per client per round (fit,
+Accuracy, AUPRC and F1 come from each client evaluating the global model on its
+own validation split (10% of its training shard) after every round, averaged over
+all clients and the 10 rounds — not final-round scores, and not the held-out test
+split. The reports store them as `test_accuracy`, `test_auprc` and `test_f1`. Times are means per client per round (fit,
 proving) or per run (duration). Upload is the mean bytes a client sends per round.
 
 ### Healthcare (`healthcare`)
 
-| Mode | Test acc. (%) | AUPRC (%) | F1 (%) | Fit (s) | Proving (s) | Upload (KB) | Duration (h) |
+| Mode | Accuracy (%) | AUPRC (%) | F1 (%) | Fit (s) | Proving (s) | Upload (KB) | Duration (h) |
 |---|---:|---:|---:|---:|---:|---:|---:|
 | `baseline` | 83.78 | 81.29 | 86.46 | 0.2 | — | 11.4 | 0.07 |
 | `he_tenseal` | 83.78 | 81.29 | 86.46 | 0.1 | — | 1,934.6 | 0.07 |
@@ -61,7 +65,7 @@ proving) or per run (duration). Upload is the mean bytes a client sends per roun
 
 ### Credit card fraud (`creditcard`)
 
-| Mode | Test acc. (%) | AUPRC (%) | F1 (%) | Fit (s) | Proving (s) | Upload (KB) | Duration (h) |
+| Mode | Accuracy (%) | AUPRC (%) | F1 (%) | Fit (s) | Proving (s) | Upload (KB) | Duration (h) |
 |---|---:|---:|---:|---:|---:|---:|---:|
 | `baseline` | 99.94 | 77.37 | 83.66 | 71.0 | — | 16.1 | 0.28 |
 | `he_tenseal` | 99.94 | 77.37 | 83.66 | 66.4 | — | 1,935.0 | 0.27 |
@@ -78,7 +82,7 @@ proving) or per run (duration). Upload is the mean bytes a client sends per roun
 
 ### Stock (`stock`)
 
-| Mode | Test acc. (%) | AUPRC (%) | F1 (%) | Fit (s) | Proving (s) | Upload (KB) | Duration (h) |
+| Mode | Accuracy (%) | AUPRC (%) | F1 (%) | Fit (s) | Proving (s) | Upload (KB) | Duration (h) |
 |---|---:|---:|---:|---:|---:|---:|---:|
 | `baseline` | 54.76 | 56.02 | 72.07 | 0.5 | — | 11.4 | 0.07 |
 | `he_tenseal` | 54.76 | 56.02 | 72.07 | 0.4 | — | 1,934.7 | 0.07 |
@@ -95,7 +99,7 @@ proving) or per run (duration). Upload is the mean bytes a client sends per roun
 
 ### MNIST (`mnist`)
 
-| Mode | Test acc. (%) | AUPRC (%) | F1 (%) | Fit (s) | Proving (s) | Upload (KB) | Duration (h) |
+| Mode | Accuracy (%) | AUPRC (%) | F1 (%) | Fit (s) | Proving (s) | Upload (KB) | Duration (h) |
 |---|---:|---:|---:|---:|---:|---:|---:|
 | `baseline` | 96.68 | 99.21 | 96.64 | 51.5 | — | 173.5 | 0.22 |
 | `he_tenseal` | 96.68 | 99.21 | 96.63 | 49.6 | — | 6,127.3 | 0.22 |
@@ -113,8 +117,8 @@ proving) or per run (duration). Upload is the mean bytes a client sends per roun
 ## Reading the numbers
 
 - Modes that do not change the model (ZKP, CKKS, ElGamal and their sampled
-  variants) train the same model as baseline and report the same test metrics,
-  up to the fixed-point encoding of the update. Differences in accuracy come from
+  variants) train the same model as baseline and report the same metrics, up to
+  the fixed-point encoding of the ElGamal update and floating-point noise. Differences in accuracy come from
   TFHE's 14-bit quantization (a few tenths of a point) and from DP.
 - creditcard is about 0.17% fraud, so accuracy is near 100% for any model; use
   AUPRC and F1.

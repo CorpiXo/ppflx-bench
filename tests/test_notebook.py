@@ -50,5 +50,5 @@ def test_notebook_runs_and_reports_the_measured_numbers(notebook_namespace):
     for _, row in df.iterrows():
         e = entries[(row["Dataset"], str(row["Key"]))]
         assert row["Run time (s)"] == e["duration"]  # measured, not estimated
-        assert row["Test acc (%)"] == e["benchmark"]["model_quality"]["test_accuracy"]["mean"]
+        assert row["Accuracy (%)"] == e["benchmark"]["model_quality"]["test_accuracy"]["mean"]
     assert (results_dir / "comparison_analysis" / "all_modes.csv").exists()
