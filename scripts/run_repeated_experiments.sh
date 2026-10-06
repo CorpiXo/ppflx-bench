@@ -54,7 +54,7 @@ if [[ $PREREQ_FAIL -eq 1 ]]; then
 fi
 
 DATASET="${1:-healthcare}"
-ROUNDS="${2:-20}"
+ROUNDS="${2:-10}"
 NUM_CLIENTS="${3:-3}"
 OUTPUT_DIR="${4:-results/}"
 

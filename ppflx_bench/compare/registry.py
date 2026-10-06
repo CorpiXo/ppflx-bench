@@ -38,6 +38,10 @@ class DatasetConfig:
     description: str = ""
     # Optional: override timeout per-dataset (seconds); None → use mode default
     timeout_override: Optional[int] = None
+    # Networked-run budget per round for the ElGamal modes (seconds); None → the
+    # heavy-mode default. Their proofs scale with the model: the MNIST CNN needs
+    # 352 proofs per client per round, about 3.3 h a round on a 4-core, 8-thread laptop CPU.
+    elgamal_round_budget_s: Optional[int] = None
 
 
 DATASETS: Dict[str, DatasetConfig] = {
@@ -49,12 +53,14 @@ DATASETS: Dict[str, DatasetConfig] = {
         max_epochs=3,
         output_dir="results/mnist_comparison",
         description="MNIST handwritten digits — 10 classes, grayscale 28×28",
+        elgamal_round_budget_s=16200,
     ),
     "cifar10": DatasetConfig(
         batch_size=64,
         max_epochs=5,
         output_dir="results/cifar10_comparison",
         description="CIFAR-10 colour images — 10 classes, RGB 32×32",
+        elgamal_round_budget_s=21600,  # ~62k parameters, 1.4× the MNIST CNN
     ),
     # Legacy "cifar" key — kept for backwards compatibility; maps to cifar10 loader.
     "cifar": DatasetConfig(
@@ -62,6 +68,7 @@ DATASETS: Dict[str, DatasetConfig] = {
         max_epochs=1,
         output_dir="results/cifar_comparison",
         description="CIFAR-10 image classification (legacy key; prefer cifar10)",
+        elgamal_round_budget_s=21600,
     ),
     # ── Tabular datasets ───────────────────────────────────────────────────
     "healthcare": DatasetConfig(

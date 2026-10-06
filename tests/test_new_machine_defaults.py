@@ -26,6 +26,9 @@ def test_compare_defaults_to_every_registered_mode(monkeypatch):
     monkeypatch.setattr(runner, "run_comparison", fake_run_comparison)
     assert compare.main(["--dataset", "healthcare"]) == 0
     assert seen["modes"] is None
+    # The published configuration: 3 clients, 10 rounds.
+    assert (seen["num_clients"], seen["num_rounds"]) == (3, 10)
+    assert (runner.CompareConfig().num_clients, runner.CompareConfig().num_rounds) == (3, 10)
     cfg = runner._merge_dataset_defaults(runner.CompareConfig(dataset="healthcare", modes=seen["modes"]))
     assert cfg.modes == list(MODES)
     assert {"he_elgamal_zkp", "he_elgamal_zkp_sampled"} <= set(cfg.modes)
@@ -80,3 +83,31 @@ def test_proof_service_binary_is_required(monkeypatch, capsys):
     assert experiment._gnark_binary() is None
     out = capsys.readouterr().out
     assert "FL_GNARK_BINARY" in out and "gnark-gradient-prover" in out
+
+
+def test_networked_run_budget_scales_with_rounds(monkeypatch):
+    monkeypatch.delenv("FL_SERVER_TIMEOUT", raising=False)
+    monkeypatch.delenv("FL_CLIENT_TIMEOUT", raising=False)
+    elgamal, baseline = MODES["he_elgamal_zkp"], MODES["baseline"]
+    # he_elgamal_zkp on creditcard takes about 21 min a round: 20 rounds must fit.
+    assert experiment._run_timeout(elgamal, False, 20) >= 20 * 21 * 60 + 1800
+    # Short runs keep the previous floors.
+    assert experiment._run_timeout(elgamal, False, 2) == 21600 + 1800
+    assert experiment._run_timeout(baseline, False, 20) == 7200 + 1800
+    # MNIST ElGamal took about 3.3 h a round (352 proofs per client): 20 rounds must fit.
+    assert experiment._run_timeout(elgamal, False, 20, "mnist") >= 20 * 3.3 * 3600 + 1800
+    assert experiment._run_timeout(MODES["he_elgamal_zkp_sampled"], False, 20, "cifar") > 20 * 3.3 * 3600
+    # The per-dataset budget is for the ElGamal modes only.
+    assert experiment._run_timeout(MODES["zkp"], False, 20, "mnist") == 20 * 1800 + 1800
+    monkeypatch.setenv("FL_CLIENT_TIMEOUT", "100")
+    assert experiment._run_timeout(elgamal, False, 20) == 100 + 1800
+    monkeypatch.setenv("FL_SERVER_TIMEOUT", "50")
+    assert experiment._run_timeout(elgamal, False, 20) == 50
+
+
+def test_every_client_evaluates_every_round(tmp_path):
+    from ppflx_bench.compare.experiment import run_config_for
+
+    run_config = run_config_for("baseline", {"number_clients": 3}, str(tmp_path), simulation=False)
+    assert run_config["frac-eval"] == 1.0 and run_config["min-eval-clients"] == 3
+    assert tomllib.loads((REPO / "pyproject.toml").read_text())["tool"]["flwr"]["app"]["config"]["frac-eval"] == 1.0
