@@ -346,7 +346,7 @@ For each α ∈ {0.1, 0.5, 1.0, 10.0}:
 Merge all results into alpha_sweep_summary.json
 ```
 
-All other hyperparameters (K = 3 clients, R = 20 rounds per mode, learning rate, batch size, DP $\varepsilon$ = current key file value, ZKP sampled coordinates = 100) are held constant across the sweep. This isolates the effect of $\alpha$ on each mode.
+All other hyperparameters (K = 3 clients, R = 10 rounds per mode, learning rate, batch size, DP $\varepsilon$ = current key file value, ZKP sampled coordinates = 100) are held constant across the sweep. This isolates the effect of $\alpha$ on each mode.
 
 #### Running the Sweep
 

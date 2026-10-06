@@ -1,0 +1,505 @@
+{
+  "mode": "zkp_sampled",
+  "num_clients": 3,
+  "rounds": 10,
+  "transport": "network",
+  "zkp_backend": "gnark",
+  "timing": {
+    "client_get_params": {
+      "mean": 0,
+      "std": 0,
+      "min": 0,
+      "max": 0,
+      "total": 0
+    },
+    "client_fit": {
+      "mean": 0.10083415508270263,
+      "std": 0.028668141976298085,
+      "min": 0.0544285774230957,
+      "max": 0.16026735305786133,
+      "total": 3.025024652481079
+    },
+    "client_eval": {
+      "mean": 0.0074985742568969725,
+      "std": 0.009824732458517865,
+      "min": 0.0014300346374511719,
+      "max": 0.03621649742126465,
+      "total": 0.22495722770690918
+    },
+    "server_aggregate": {
+      "mean": 0.0002882719039916992,
+      "std": 7.744541937565298e-05,
+      "min": 0.0002295970916748047,
+      "max": 0.0004367828369140625,
+      "total": 0.002882719039916992
+    },
+    "encryption": {
+      "mean": 0,
+      "std": 0,
+      "min": 0,
+      "max": 0,
+      "total": 0
+    },
+    "decryption": {
+      "mean": 0,
+      "std": 0,
+      "min": 0,
+      "max": 0,
+      "total": 0
+    },
+    "proof_generation": {
+      "mean": 5.397885417938233,
+      "std": 0.564058550965858,
+      "min": 4.047274112701416,
+      "max": 6.980252027511597,
+      "total": 161.93656253814697
+    },
+    "proof_verification": {
+      "mean": 0.011435524622599284,
+      "std": 0.002068843142188715,
+      "min": 0.009551048278808594,
+      "max": 0.016857624053955078,
+      "total": 0.3430657386779785
+    },
+    "dp_noise_addition": {
+      "mean": 0,
+      "std": 0,
+      "min": 0,
+      "max": 0,
+      "total": 0
+    }
+  },
+  "memory_mb": {
+    "client_peak": {
+      "mean": 583.8872395833333,
+      "std": 0.20078969394263332,
+      "min": 583.4765625,
+      "max": 584.3203125,
+      "total": 17516.6171875
+    },
+    "server_peak": {
+      "mean": 586.63359375,
+      "std": 0.12669505018818808,
+      "min": 586.34375,
+      "max": 586.80859375,
+      "total": 5866.3359375
+    }
+  },
+  "communication_bytes": {
+    "upload": {
+      "mean": 11656.0,
+      "std": 0.0,
+      "min": 11656.0,
+      "max": 11656.0,
+      "total": 349680.0
+    },
+    "download": {
+      "mean": 11656.0,
+      "std": 0.0,
+      "min": 11656.0,
+      "max": 11656.0,
+      "total": 349680.0
+    }
+  },
+  "model_quality": {
+    "train_loss": {
+      "mean": 0.455552380780379,
+      "std": 0.091231767939556,
+      "min": 0.36733585761653054,
+      "max": 0.6535847981770834,
+      "total": 13.666571423411371
+    },
+    "train_accuracy": {
+      "mean": 82.62323633156967,
+      "std": 2.2207984524531117,
+      "min": 72.82407407407408,
+      "max": 84.87103174603175,
+      "total": 2478.6970899470903
+    },
+    "val_loss": {
+      "mean": 0.502896802375714,
+      "std": 0.09654674897520713,
+      "min": 0.36442527174949646,
+      "max": 0.6649462878704071,
+      "total": 15.08690407127142
+    },
+    "val_accuracy": {
+      "mean": 82.59027777777777,
+      "std": 7.510348441925702,
+      "min": 67.29166666666666,
+      "max": 93.75,
+      "total": 2477.708333333333
+    },
+    "test_loss": {
+      "mean": 0.5009358689188957,
+      "std": 0.07155798836175303,
+      "min": 0.3603731542825699,
+      "max": 0.6637251675128937,
+      "total": 15.028076067566872
+    },
+    "test_accuracy": {
+      "mean": 83.78472222222223,
+      "std": 2.051792066889078,
+      "min": 70.625,
+      "max": 90.625,
+      "total": 2513.541666666667
+    },
+    "test_precision": {
+      "mean": 84.97917550858726,
+      "std": 6.20003558869847,
+      "min": 76.19047619047619,
+      "max": 92.85714285714286,
+      "total": 2549.3752652576177
+    },
+    "test_recall": {
+      "mean": 88.73539314715784,
+      "std": 5.482031236587803,
+      "min": 72.22222222222221,
+      "max": 94.44444444444444,
+      "total": 2662.0617944147352
+    },
+    "test_f1": {
+      "mean": 86.46481754748343,
+      "std": 2.439789901070395,
+      "min": 81.25,
+      "max": 90.9090909090909,
+      "total": 2593.9445264245032
+    },
+    "test_auprc": {
+      "mean": 81.28595348479756,
+      "std": 4.543507601223957,
+      "min": 75.71628262288492,
+      "max": 88.01847072680405,
+      "total": 2438.5786045439268
+    },
+    "test_threshold": {
+      "mean": 0.5032675226529439,
+      "std": 0.08502870544766992,
+      "min": 0.38285401463508606,
+      "max": 0.6518746018409729,
+      "total": 15.098025679588318
+    }
+  },
+  "round_outcomes": [
+    {
+      "round": 1,
+      "outcome": "committed",
+      "admitted": [
+        "3497782652398293121",
+        "2577718469131773935",
+        "3108872915035405767"
+      ],
+      "rejected": {},
+      "key_manifest_sha256": "95279d9c3fc2c05dec1aa102037109b18ff9ddb353a3153da4a162f34bbc4ba9",
+      "flower_failures": 0,
+      "update_norms": {
+        "3497782652398293121": 0.2659909448547054,
+        "2577718469131773935": 0.27665349946490175,
+        "3108872915035405767": 0.249595262738674
+      },
+      "clipped": []
+    },
+    {
+      "round": 2,
+      "outcome": "aggregated",
+      "admitted": [
+        "3108872915035405767",
+        "2577718469131773935",
+        "3497782652398293121"
+      ],
+      "rejected": {},
+      "key_manifest_sha256": "95279d9c3fc2c05dec1aa102037109b18ff9ddb353a3153da4a162f34bbc4ba9",
+      "sample_seed": "e827134d23ba3229d7ad89722c314dd2072dc8ef865f08a794c314e8be3b9e88",
+      "sampled_coordinates": 292,
+      "flower_failures": 0
+    },
+    {
+      "round": 3,
+      "outcome": "committed",
+      "admitted": [
+        "3497782652398293121",
+        "2577718469131773935",
+        "3108872915035405767"
+      ],
+      "rejected": {},
+      "key_manifest_sha256": "95279d9c3fc2c05dec1aa102037109b18ff9ddb353a3153da4a162f34bbc4ba9",
+      "flower_failures": 0,
+      "update_norms": {
+        "3497782652398293121": 0.23761621025353963,
+        "2577718469131773935": 0.23989351505494655,
+        "3108872915035405767": 0.2240128130175185
+      },
+      "clipped": []
+    },
+    {
+      "round": 4,
+      "outcome": "aggregated",
+      "admitted": [
+        "3108872915035405767",
+        "3497782652398293121",
+        "2577718469131773935"
+      ],
+      "rejected": {},
+      "key_manifest_sha256": "95279d9c3fc2c05dec1aa102037109b18ff9ddb353a3153da4a162f34bbc4ba9",
+      "sample_seed": "99365038c78de817dd2c42eb49c377d86ec637d3745622c67020778e4f13f153",
+      "sampled_coordinates": 292,
+      "flower_failures": 0
+    },
+    {
+      "round": 5,
+      "outcome": "committed",
+      "admitted": [
+        "2577718469131773935",
+        "3108872915035405767",
+        "3497782652398293121"
+      ],
+      "rejected": {},
+      "key_manifest_sha256": "95279d9c3fc2c05dec1aa102037109b18ff9ddb353a3153da4a162f34bbc4ba9",
+      "flower_failures": 0,
+      "update_norms": {
+        "2577718469131773935": 0.24343576970275388,
+        "3108872915035405767": 0.23477828048195665,
+        "3497782652398293121": 0.24728262260725226
+      },
+      "clipped": []
+    },
+    {
+      "round": 6,
+      "outcome": "aggregated",
+      "admitted": [
+        "2577718469131773935",
+        "3497782652398293121",
+        "3108872915035405767"
+      ],
+      "rejected": {},
+      "key_manifest_sha256": "95279d9c3fc2c05dec1aa102037109b18ff9ddb353a3153da4a162f34bbc4ba9",
+      "sample_seed": "b86e42f66ff0a00d98a04b8459c64fccd238c23f6b892fe4190984f4c9054ddd",
+      "sampled_coordinates": 292,
+      "flower_failures": 0
+    },
+    {
+      "round": 7,
+      "outcome": "committed",
+      "admitted": [
+        "3108872915035405767",
+        "3497782652398293121",
+        "2577718469131773935"
+      ],
+      "rejected": {},
+      "key_manifest_sha256": "95279d9c3fc2c05dec1aa102037109b18ff9ddb353a3153da4a162f34bbc4ba9",
+      "flower_failures": 0,
+      "update_norms": {
+        "3108872915035405767": 0.2072710512659701,
+        "3497782652398293121": 0.22548711447547515,
+        "2577718469131773935": 0.219804857577563
+      },
+      "clipped": []
+    },
+    {
+      "round": 8,
+      "outcome": "aggregated",
+      "admitted": [
+        "3497782652398293121",
+        "3108872915035405767",
+        "2577718469131773935"
+      ],
+      "rejected": {},
+      "key_manifest_sha256": "95279d9c3fc2c05dec1aa102037109b18ff9ddb353a3153da4a162f34bbc4ba9",
+      "sample_seed": "ab28bf509b5eea1b452524a5fc81f402bbdda465119d3c1805d3cf8d3e78c474",
+      "sampled_coordinates": 292,
+      "flower_failures": 0
+    },
+    {
+      "round": 9,
+      "outcome": "committed",
+      "admitted": [
+        "2577718469131773935",
+        "3108872915035405767",
+        "3497782652398293121"
+      ],
+      "rejected": {},
+      "key_manifest_sha256": "95279d9c3fc2c05dec1aa102037109b18ff9ddb353a3153da4a162f34bbc4ba9",
+      "flower_failures": 0,
+      "update_norms": {
+        "2577718469131773935": 0.17497788033965117,
+        "3108872915035405767": 0.1608439870024889,
+        "3497782652398293121": 0.17807590390098335
+      },
+      "clipped": []
+    },
+    {
+      "round": 10,
+      "outcome": "aggregated",
+      "admitted": [
+        "3497782652398293121",
+        "3108872915035405767",
+        "2577718469131773935"
+      ],
+      "rejected": {},
+      "key_manifest_sha256": "95279d9c3fc2c05dec1aa102037109b18ff9ddb353a3153da4a162f34bbc4ba9",
+      "sample_seed": "927cb66af2ba236e6a68aebb333445d3c2230b0071b643b9588867994b94d4fe",
+      "sampled_coordinates": 292,
+      "flower_failures": 0
+    },
+    {
+      "round": 11,
+      "outcome": "committed",
+      "admitted": [
+        "2577718469131773935",
+        "3497782652398293121",
+        "3108872915035405767"
+      ],
+      "rejected": {},
+      "key_manifest_sha256": "95279d9c3fc2c05dec1aa102037109b18ff9ddb353a3153da4a162f34bbc4ba9",
+      "flower_failures": 0,
+      "update_norms": {
+        "2577718469131773935": 0.13708912451358962,
+        "3497782652398293121": 0.13597083510747038,
+        "3108872915035405767": 0.12481278573483469
+      },
+      "clipped": []
+    },
+    {
+      "round": 12,
+      "outcome": "aggregated",
+      "admitted": [
+        "3497782652398293121",
+        "3108872915035405767",
+        "2577718469131773935"
+      ],
+      "rejected": {},
+      "key_manifest_sha256": "95279d9c3fc2c05dec1aa102037109b18ff9ddb353a3153da4a162f34bbc4ba9",
+      "sample_seed": "05d2c8b9c5383591d785ed3c8e821eef60cb052109dae98c0888996611d3ee68",
+      "sampled_coordinates": 292,
+      "flower_failures": 0
+    },
+    {
+      "round": 13,
+      "outcome": "committed",
+      "admitted": [
+        "2577718469131773935",
+        "3108872915035405767",
+        "3497782652398293121"
+      ],
+      "rejected": {},
+      "key_manifest_sha256": "95279d9c3fc2c05dec1aa102037109b18ff9ddb353a3153da4a162f34bbc4ba9",
+      "flower_failures": 0,
+      "update_norms": {
+        "2577718469131773935": 0.11447204881573661,
+        "3108872915035405767": 0.10839979565451144,
+        "3497782652398293121": 0.10898576737730102
+      },
+      "clipped": []
+    },
+    {
+      "round": 14,
+      "outcome": "aggregated",
+      "admitted": [
+        "3497782652398293121",
+        "2577718469131773935",
+        "3108872915035405767"
+      ],
+      "rejected": {},
+      "key_manifest_sha256": "95279d9c3fc2c05dec1aa102037109b18ff9ddb353a3153da4a162f34bbc4ba9",
+      "sample_seed": "d7af6a8213e35cd6dda76864c0f04760319ae906584021698917d051b5c7a8f4",
+      "sampled_coordinates": 292,
+      "flower_failures": 0
+    },
+    {
+      "round": 15,
+      "outcome": "committed",
+      "admitted": [
+        "2577718469131773935",
+        "3108872915035405767",
+        "3497782652398293121"
+      ],
+      "rejected": {},
+      "key_manifest_sha256": "95279d9c3fc2c05dec1aa102037109b18ff9ddb353a3153da4a162f34bbc4ba9",
+      "flower_failures": 0,
+      "update_norms": {
+        "2577718469131773935": 0.10257505014585389,
+        "3108872915035405767": 0.10238096438015352,
+        "3497782652398293121": 0.09427277297404049
+      },
+      "clipped": []
+    },
+    {
+      "round": 16,
+      "outcome": "aggregated",
+      "admitted": [
+        "2577718469131773935",
+        "3108872915035405767",
+        "3497782652398293121"
+      ],
+      "rejected": {},
+      "key_manifest_sha256": "95279d9c3fc2c05dec1aa102037109b18ff9ddb353a3153da4a162f34bbc4ba9",
+      "sample_seed": "f97c0d966154ee1d66ef20d05b818d33b0c53c1b191f2f827162ed8a8f6a49d0",
+      "sampled_coordinates": 292,
+      "flower_failures": 0
+    },
+    {
+      "round": 17,
+      "outcome": "committed",
+      "admitted": [
+        "3108872915035405767",
+        "3497782652398293121",
+        "2577718469131773935"
+      ],
+      "rejected": {},
+      "key_manifest_sha256": "95279d9c3fc2c05dec1aa102037109b18ff9ddb353a3153da4a162f34bbc4ba9",
+      "flower_failures": 0,
+      "update_norms": {
+        "3108872915035405767": 0.10093681592156897,
+        "3497782652398293121": 0.08664887747556149,
+        "2577718469131773935": 0.09611077858225432
+      },
+      "clipped": []
+    },
+    {
+      "round": 18,
+      "outcome": "aggregated",
+      "admitted": [
+        "3108872915035405767",
+        "3497782652398293121",
+        "2577718469131773935"
+      ],
+      "rejected": {},
+      "key_manifest_sha256": "95279d9c3fc2c05dec1aa102037109b18ff9ddb353a3153da4a162f34bbc4ba9",
+      "sample_seed": "105742f5ca316f54f7e5daf1884418cec12fb7574278223ea5d8662efa0f7777",
+      "sampled_coordinates": 292,
+      "flower_failures": 0
+    },
+    {
+      "round": 19,
+      "outcome": "committed",
+      "admitted": [
+        "3108872915035405767",
+        "3497782652398293121",
+        "2577718469131773935"
+      ],
+      "rejected": {},
+      "key_manifest_sha256": "95279d9c3fc2c05dec1aa102037109b18ff9ddb353a3153da4a162f34bbc4ba9",
+      "flower_failures": 0,
+      "update_norms": {
+        "3108872915035405767": 0.10078171991147725,
+        "3497782652398293121": 0.0827757632616176,
+        "2577718469131773935": 0.09284271351017886
+      },
+      "clipped": []
+    },
+    {
+      "round": 20,
+      "outcome": "aggregated",
+      "admitted": [
+        "3108872915035405767",
+        "3497782652398293121",
+        "2577718469131773935"
+      ],
+      "rejected": {},
+      "key_manifest_sha256": "95279d9c3fc2c05dec1aa102037109b18ff9ddb353a3153da4a162f34bbc4ba9",
+      "sample_seed": "75019cdd264307ee53a7fed550eec5c40166a8fe655686d7c743a7a9960b0282",
+      "sampled_coordinates": 292,
+      "flower_failures": 0
+    }
+  ]
+}

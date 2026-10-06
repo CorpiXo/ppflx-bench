@@ -30,7 +30,7 @@ class CompareConfig:
     dataset: str = "healthcare"
     modes: List[str] = field(default_factory=list)
     num_clients: int = 3
-    num_rounds: int = 20
+    num_rounds: int = 10
     max_epochs: Optional[int] = None  # None → use dataset default
     batch_size: Optional[int] = None  # None → use dataset default
     device: str = "cpu"
@@ -104,7 +104,7 @@ def run_comparison(
     dataset: str = "healthcare",
     modes: Optional[List[str]] = None,
     num_clients: int = 3,
-    num_rounds: int = 20,
+    num_rounds: int = 10,
     max_epochs: Optional[int] = None,
     batch_size: Optional[int] = None,
     device: str = "cpu",
@@ -451,7 +451,7 @@ def run_alpha_sweep(
     dataset: str = "healthcare",
     modes: Optional[List[str]] = None,
     num_clients: int = 3,
-    num_rounds: int = 20,
+    num_rounds: int = 10,
     max_epochs: Optional[int] = None,
     batch_size: Optional[int] = None,
     device: str = "cpu",
@@ -588,7 +588,7 @@ def run_dp_epsilon_sweep(
     dataset: str = "healthcare",
     modes: Optional[List[str]] = None,
     num_clients: int = 3,
-    num_rounds: int = 20,
+    num_rounds: int = 10,
     max_epochs: Optional[int] = None,
     batch_size: Optional[int] = None,
     device: str = "cpu",

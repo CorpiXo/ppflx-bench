@@ -542,7 +542,7 @@ results = run_dp_epsilon_sweep(
     dataset="healthcare",
     epsilons=[0.5, 1.0, 2.0, 3.0, 5.0, 8.0],   # default sweep values
     num_clients=3,
-    num_rounds=20,
+    num_rounds=10,
     use_simulation=True,
     output_dir="results/",
 )

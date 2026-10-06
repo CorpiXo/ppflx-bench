@@ -4,7 +4,7 @@ compare.py — Federated learning privacy-mode comparison CLI.
 
 Examples
 --------
-# The full run: all registered modes, 3 clients, 20 rounds, networked:
+# The full run: all registered modes, 3 clients, 10 rounds, networked:
 python compare.py --dataset healthcare
 
 # Run specific modes with fewer rounds:
@@ -86,8 +86,8 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument(
         "--rounds",
         type=int,
-        default=20,
-        help="Number of FL rounds, at least 1 (default: 20). "
+        default=10,
+        help="Number of FL rounds, at least 1 (default: 10). "
         "Use 2+ to exercise decrypting an aggregate before the next proven upload.",
     )
     p.add_argument(

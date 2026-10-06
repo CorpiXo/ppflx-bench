@@ -23,7 +23,7 @@ from ppflx_bench.compare.benchmark import (
     aggregate_client_benchmarks,
     merge_server_and_clients,
 )
-from ppflx_bench.compare.registry import ModeConfig
+from ppflx_bench.compare.registry import DATASETS, ModeConfig
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -318,6 +318,11 @@ def run_config_for(display_mode: str, base_args: Dict[str, Any], result_dir: str
             # nothing to answer the challenge with, and every mode runs its first
             # round with fewer clients.
             "min-avail-clients": num_clients,
+            # Every client evaluates every round. Sampling evaluators gave the
+            # same model different test scores in different modes, depending on
+            # which partitions were drawn.
+            "frac-eval": 1.0,
+            "min-eval-clients": num_clients,
             "results-dir": result_dir,
             "model-save": os.path.join(result_dir, "server_model.pt"),
             "benchmark": True,
@@ -344,7 +349,14 @@ def round_failures(benchmark: Optional[Dict]) -> List[str]:
     return problems
 
 
-def _run_timeout(mode_cfg: ModeConfig, simulation: bool) -> int:
+# Default budget per federated round for networked runs. A flat budget stopped
+# a healthy he_elgamal_zkp run on creditcard in round 19: 35 proofs per client
+# take about 21 min a round, so 20 rounds need about 7 h.
+HEAVY_ROUND_BUDGET_S = 1800
+LIGHT_ROUND_BUDGET_S = 360
+
+
+def _run_timeout(mode_cfg: ModeConfig, simulation: bool, num_rounds: int, dataset: Optional[str] = None) -> int:
     env_timeout = os.environ.get("FL_SERVER_TIMEOUT", "").strip()
     if env_timeout:
         return int(env_timeout)
@@ -354,9 +366,14 @@ def _run_timeout(mode_cfg: ModeConfig, simulation: bool) -> int:
     if env_client_timeout:
         client_timeout = int(env_client_timeout)
     else:
-        # Heavy crypto modes can run for multiple hours on CIFAR; default to 6h.
+        # Heavy crypto modes: at least 6 h, and 30 min per round beyond that.
         mode_l = str(mode_cfg.internal_mode).lower()
-        client_timeout = 21600 if ("zkp" in mode_l or mode_l.startswith("he")) else 7200
+        heavy = "zkp" in mode_l or mode_l.startswith("he")
+        per_round = HEAVY_ROUND_BUDGET_S if heavy else LIGHT_ROUND_BUDGET_S
+        ds = DATASETS.get(dataset or "")
+        if mode_cfg.he_backend == "elgamal" and ds is not None and ds.elgamal_round_budget_s:
+            per_round = ds.elgamal_round_budget_s
+        client_timeout = max(21600 if heavy else 7200, num_rounds * per_round)
     # 30 min headroom for final evaluation, checkpointing and shutdown.
     return client_timeout + 1800
 
@@ -383,7 +400,10 @@ def _run_federation(
             run_id = federation.submit(run_config)
             where = "Simulation Runtime" if simulation else f"{num_clients} SuperNodes"
             print(f"[OK] Run {run_id} submitted ({where}); logs in {result_dir}")
-            status, details = federation.wait(run_id, timeout=_run_timeout(mode_cfg, simulation), grace=grace)
+            timeout = _run_timeout(
+                mode_cfg, simulation, int(run_config.get("num-rounds", 1)), run_config.get("dataset")
+            )
+            status, details = federation.wait(run_id, timeout=timeout, grace=grace)
             client_failures = federation.client_failures()
             federation.save_app_logs(run_id)
     except (RuntimeError, OSError, ValueError, subprocess.SubprocessError) as exc:

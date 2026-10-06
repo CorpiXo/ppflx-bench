@@ -3,15 +3,16 @@
 Benchmarks for [ppflx](https://github.com/CorpiXo/ppflx): the same federated
 learning run under twelve privacy configurations — homomorphic encryption,
 zero-knowledge proofs of bounded updates, differential privacy and their
-combinations — across five datasets, with a blockchain audit ledger.
+combinations — on four datasets (healthcare, creditcard, stock and MNIST),
+with a blockchain audit ledger.
 
 The library lives in [ppflx](https://github.com/CorpiXo/ppflx) and the proof
 service in
 [gnark-gradient-prover](https://github.com/CorpiXo/gnark-gradient-prover).
 
-> **Results are not published yet.** The figures from before the Flower 1.36
-> migration were produced by older protocols and key handling, so they were not
-> carried over. `results/` will be filled by the next full benchmark run.
+> **Results:** all twelve modes on healthcare, creditcard, stock and MNIST, with
+> 3 clients and 10 rounds over a networked SuperLink, are in
+> [`results/`](results/README.md), which summarises them and describes the setup.
 
 ## Install
 
@@ -127,7 +128,7 @@ python compare.py --dataset healthcare --modes baseline,zkp,he_elgamal_zkp --rou
 ```
 
 Then one full run per dataset. Without flags, `compare.py` runs all 12 modes
-with 3 clients, 20 rounds and the dataset's default epochs, over a networked
+with 3 clients, 10 rounds and the dataset's default epochs, over a networked
 SuperLink with one SuperNode per client, and starts the prover and verifier
 itself:
 
@@ -135,13 +136,35 @@ itself:
 python compare.py --dataset healthcare
 python compare.py --dataset creditcard
 python compare.py --dataset stock
-python compare.py --dataset mnist
-python compare.py --dataset cifar
+FL_CONCRETE_TFHE_FORCE_REAL=1 python compare.py --dataset mnist
 ```
 
-Full ZKP modes on `mnist` and `cifar` are memory-intensive: the harness warns
+Real TFHE on an image dataset needs `FL_CONCRETE_TFHE_FORCE_REAL=1`; without
+it the TFHE modes refuse to run rather than send plaintext. On mnist each TFHE
+client peaks at about 1.5 GB.
+
+CIFAR-10 (`--dataset cifar10`) is supported but not part of the published
+comparison. On a 4-core, 8-thread laptop with 23 GB of RAM each real-TFHE client reached about
+5.7 GB on the model's 120×400 layer and the kernel killed one of the three in
+every round, and `he_elgamal_zkp` would need about 490 proofs per client per
+round (about 4.6 h a round, estimated from mnist). MNIST already covers an image
+model; CIFAR-10 needs more memory and about two more days of proving.
+
+Full ZKP modes on `mnist` and `cifar10` are memory-intensive: the harness warns
 that they can run the Python process and the proof service out of memory.
 Keep `FL_ZKP_PARALLELISM=1` (the default) and run nothing else heavy alongside.
+
+`he_elgamal_zkp` proves every model coordinate, 128 per proof, so its cost grows
+with the model. On a 4-core, 8-thread laptop CPU (Intel Core i5-1035G1) a round took about 13 min on
+healthcare, 21 min on creditcard and 3.3 h on mnist (352 proofs per client), so
+a 10-round mnist run takes about a day and a half. The harness sizes each run's time
+budget from the number of rounds, with a larger per-round budget for the ElGamal
+modes on the image datasets; `FL_SERVER_TIMEOUT` overrides it. To run that mode
+on its own after the others:
+
+```bash
+python compare.py --dataset mnist --modes he_elgamal_zkp
+```
 
 ### 9. Accept the results
 
@@ -160,6 +183,11 @@ successful modes are merged into `results/<dataset>/comparison_report.json`.
 Figures come only from these files. Every ZKP round outcome records the SHA-256
 of the key manifest it was verified under (`key_manifest_sha256`), so the keys
 a run used are traceable.
+
+Only accepted runs are committed: rename the run directory to
+`results/<dataset>/keep_<timestamp>/`, and git tracks its JSON and comparison
+figure along with the dataset's merged report. Everything else under `results/`
+is ignored.
 
 ---
 
@@ -547,7 +575,7 @@ This checkout includes the guides index at [docs/README.md](docs/README.md) plus
 
 ## Performance Reference
 
-The stored results under `results/` were produced before the current ZKP protocols, key handling and fail-closed checks, so their timings and bandwidth figures describe older code and are not reproduced here. They will be regenerated with the current code.
+End-to-end timings, bandwidth and accuracy for every mode are in [`results/README.md`](results/README.md), from runs on an Intel Core i5-1035G1 laptop CPU.
 
 Current single-proof measurements (Apple M3 Pro, 18 GB):
 
@@ -609,7 +637,7 @@ All tuning is via environment variables — no code changes required. Variables 
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `FL_CLIENT_TIMEOUT` | `7200` (6 h for HE/ZKP modes) | Harness: time budget per run in seconds, plus 30 min headroom; `FL_SERVER_TIMEOUT` sets the total directly |
+| `FL_CLIENT_TIMEOUT` | the larger of 2 h and 6 min per round (HE/ZKP modes: 6 h and 30 min per round) | Harness: time budget per run in seconds, plus 30 min headroom; `FL_SERVER_TIMEOUT` sets the total directly |
 | `FL_CLIENT_WAIT_TIMEOUT` | `600` | ServerApp: seconds to wait for enough SuperNodes before a round, then stop the run |
 
 ---

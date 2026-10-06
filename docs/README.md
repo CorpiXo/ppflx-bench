@@ -412,7 +412,7 @@ All tuning is done via environment variables — no code changes required. Varia
 
 | Variable | Default | Values | Effect on results |
 |----------|---------|--------|------------------|
-| `FL_CLIENT_TIMEOUT` | `7200` (6 h for HE/ZKP modes) | Seconds | Harness time budget per run, plus 30 min headroom. HE + ZKP modes can take 10+ minutes per round; set ≥ `num_rounds × max_round_time` |
+| `FL_CLIENT_TIMEOUT` | the larger of 2 h and 6 min per round (HE/ZKP modes: 6 h and 30 min per round) | Seconds | Harness time budget per run, plus 30 min headroom. HE + ZKP modes can take 20+ minutes per round (`he_elgamal_zkp` on creditcard); if set, use ≥ `num_rounds × max_round_time` |
 | `FL_CLIENT_WAIT_TIMEOUT` | `600` | Seconds | How long the ServerApp waits for enough SuperNodes before a round before it stops the run |
 | `FL_NUMBER_CLIENTS` | Set by `--num-clients` | Integer | Expected client count. Set automatically by the compare runner; override only in manual deployments |
 
@@ -431,7 +431,7 @@ export FL_CONCRETE_TFHE_BIT_WIDTH=14
 export FL_CONCRETE_TFHE_ADAPTIVE_QUANT=0
 
 ## Timing
-export FL_CLIENT_TIMEOUT=7200
+# export FL_CLIENT_TIMEOUT=43200   # optional: the default budget grows with the number of rounds
 
 ## Then simply:
 python compare.py --dataset stock

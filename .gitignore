@@ -243,10 +243,15 @@ fl/keys/prebuilt/*.zip
 *.csv
 results_*.csv
 
-# Keep selected runs by prefix (must come after broad result ignore patterns above)
-# Keep only selected runs by prefix.
-# `results/**` ignores parent dirs too, so unignore dirs first, then keep_* trees.
+# Benchmark results: ignored, except each dataset's merged report and the runs
+# promoted with a keep_ prefix (results/<dataset>/keep_<timestamp>/). In a kept
+# run: its JSON (reports, per-mode and per-client benchmarks, ledgers) and the
+# comparison figure. Flower state, logs, model weights and run_config.toml
+# (absolute local paths) stay out. `results/**` ignores directories too, so
+# unignore them first.
+results/**
 !results/**/
-!results/**/keep_*/
-!results/**/comparison_report.json
-!results/**/keep_*/**/*.json
+!results/*/comparison_report.json
+!results/*/keep_*/**/*.json
+!results/*/keep_*/comparison.png
+results/**/.flwr/
