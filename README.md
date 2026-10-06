@@ -194,6 +194,46 @@ is ignored.
 
 ---
 
+## Docker
+
+The benchmark also runs in a container, built from the same side-by-side
+checkouts. It needs Docker Engine with the compose plugin.
+
+```bash
+cd ppflx-bench
+scripts/run_docker_compare.sh                                   # all 12 modes on healthcare
+scripts/run_docker_compare.sh --dataset creditcard --modes baseline,zkp --rounds 2
+```
+
+The script builds the image (`compose.yaml`, `Dockerfile`), runs `init` to
+generate whatever keys are missing (the local ZKP key set, then the HE, DP and
+ElGamal keys), and runs `compare.py` with your arguments. The proof service,
+ppflx and the harness are inside the image; these directories are mounted from
+`ppflx-bench/` and stay on the host:
+
+| Host | Holds |
+|---|---|
+| `dataset/` | the datasets; the container does not download them |
+| `results/` | the run results, as for a run on the host |
+| `keys/` | the HE, DP and ElGamal keys |
+| `.docker-state/` | the ZKP key set and the TFHE circuits and keys |
+
+The container runs as your user, so everything written there stays yours. To
+download the datasets inside the container instead of on the host, mount your
+Kaggle token:
+
+```bash
+docker compose run --rm -v ~/.kaggle:/tmp/.kaggle:ro bench python download_datasets.py
+```
+
+When you call `docker compose` yourself, first
+`export PPFLX_UID=$(id -u) PPFLX_GID=$(id -g)` so the container runs as you.
+Any harness command runs the same way, for example
+`docker compose run --rm bench pytest tests` or
+`docker compose run --rm -e FL_CONCRETE_TFHE_FORCE_REAL=1 bench python compare.py --dataset mnist`.
+
+---
+
 ## Privacy Modes
 
 What each mode protects is set out in ppflx's
