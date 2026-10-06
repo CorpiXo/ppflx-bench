@@ -152,8 +152,8 @@ def _dirichlet_partition(
 ) -> List[Subset]:
     """Partition *dataset* into *num_clients* shards using a Dirichlet prior.
 
-    Each client receives samples whose class distribution is drawn from
-    Dir(alpha).  Small alpha → extreme non-IID; large alpha → near-IID.
+    Each class's samples are divided among the clients in proportions drawn
+    from Dir(alpha · 1).  Small alpha → extreme non-IID; large alpha → near-IID.
 
     Parameters
     ----------

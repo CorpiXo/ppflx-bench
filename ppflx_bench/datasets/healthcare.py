@@ -1,8 +1,9 @@
 """
 Heart disease (healthcare) dataset loader.
 
-Source: UCI Heart Disease Dataset
-  303 samples, 13 features, binary classification (disease / no disease).
+Source: Kaggle heart disease dataset (Statlog, Cleveland and Hungary combined),
+  heart_statlog_cleveland_hungary_final.csv: 1,190 samples, 11 features,
+  binary classification (disease / no disease).
 """
 
 from __future__ import annotations
@@ -20,7 +21,7 @@ from ppflx_bench.datasets.creditcard import _partition_tabular
 class HealthcareLoader(DatasetLoader):
     spec = DatasetSpec(
         name="healthcare",
-        input_dim=13,
+        input_dim=11,
         num_classes=2,
         is_tabular=True,
         class_names=["no disease", "disease"],

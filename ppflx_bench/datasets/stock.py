@@ -2,8 +2,11 @@
 Stock market (CERN) dataset loader.
 
 Source: Kaggle "Price Volume Data for US Stocks & ETFs"
-  Target: StockMove (1 = price up, 0 = price down).
-  7 engineered features from OHLC data.
+  One ticker (CERN), 3,180 trading days after feature warm-up.
+  Target: StockMove (1 = next close higher, 0 = not).
+  11 features: Open, Close and OpenInt; the previous day's volume; the 20-day
+  moving average and standard deviation, the two Bollinger bands and the distance
+  from the mean; and the overnight-return sign, one-hot (two columns).
 """
 
 from __future__ import annotations
@@ -21,7 +24,7 @@ from ppflx_bench.datasets.creditcard import _partition_tabular
 class StockLoader(DatasetLoader):
     spec = DatasetSpec(
         name="stock",
-        input_dim=7,  # Volume, SMA, Std_20, Band_1, Band_2, ON_returns_signal, dist_from_mean
+        input_dim=11,
         num_classes=2,
         is_tabular=True,
         class_names=["down", "up"],
