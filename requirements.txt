@@ -1,6 +1,6 @@
-# The library under test. Until ppflx is published to PyPI this is a git
-# dependency, so installing it needs access to the repository.
-ppflx @ git+ssh://git@github.com/CorpiXo/ppflx.git@main
+# The library under test, pinned to the release the published results used.
+# Until ppflx is published to PyPI this is a git dependency.
+ppflx @ git+https://github.com/CorpiXo/ppflx.git@v0.9.0
 
 # Simulation Runtime (Ray) for --simulation runs
 flwr[simulation]==1.36.0
