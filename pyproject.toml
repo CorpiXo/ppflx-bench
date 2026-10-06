@@ -1,6 +1,6 @@
 [project]
 name = "ppflx-bench"
-version = "1.0.0"
+version = "0.9.0"
 description = "Benchmark harness for ppflx: privacy-preserving federated learning with HE, ZKP and DP on Flower"
 license = "Apache-2.0"
 requires-python = ">=3.12,<3.13"
