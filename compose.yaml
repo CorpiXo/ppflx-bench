@@ -1,0 +1,31 @@
+# Run the benchmark in a container. scripts/run_docker_compare.sh is the entry
+# point; it creates the mounted directories and sets PPFLX_UID/PPFLX_GID so files
+# written to them belong to you.
+#
+# The image is built from the parent directory, which must hold the ppflx and
+# gnark-gradient-prover checkouts beside this one (see Dockerfile).
+
+x-bench: &bench
+  image: ppflx-bench
+  build:
+    context: ..
+    dockerfile: ppflx-bench/Dockerfile
+  user: "${PPFLX_UID:-1000}:${PPFLX_GID:-1000}"
+  volumes:
+    - ./dataset:/app/ppflx-bench/dataset
+    - ./results:/app/ppflx-bench/results
+    - ./keys:/app/ppflx-bench/keys
+    # ZKP key set and TFHE circuits/keys, kept between runs
+    - ./.docker-state:/state
+
+services:
+  # Generates whatever keys are missing: the local ZKP key set, then the HE, DP
+  # and ElGamal keys. Safe to run again.
+  init:
+    <<: *bench
+    command: ["bash", "scripts/docker_init.sh"]
+
+  # Any harness command; by default the comparison on healthcare.
+  bench:
+    <<: *bench
+    command: ["python", "compare.py", "--dataset", "healthcare"]

@@ -1,0 +1,22 @@
+# The build context is the directory holding the three checkouts. Send only what
+# the image needs: no datasets, results, keys, git history or local build output.
+*
+!ppflx
+!gnark-gradient-prover
+!ppflx-bench
+
+**/.git
+**/__pycache__
+**/*.egg-info
+**/.pytest_cache
+
+# Locally compiled TFHE circuits and secret keys
+ppflx/ppflx/keys/prebuilt/*
+ppflx/build
+
+gnark-gradient-prover/gnark_service
+
+ppflx-bench/dataset
+ppflx-bench/results
+ppflx-bench/keys
+ppflx-bench/.docker-state

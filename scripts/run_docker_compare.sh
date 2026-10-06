@@ -1,37 +1,41 @@
 #!/usr/bin/env bash
+# Run the comparison in Docker: build the image, generate missing keys, then run
+# compare.py with the arguments given (default: --dataset healthcare).
+#
+#   scripts/run_docker_compare.sh
+#   scripts/run_docker_compare.sh --dataset creditcard --modes baseline,zkp --rounds 2
+#
+# Needs Docker Engine with the compose plugin, and the ppflx and
+# gnark-gradient-prover checkouts beside this one. Datasets are read from
+# ./dataset (see README.md, "Docker"); results go to ./results as on the host.
 set -euo pipefail
-
-# Run all non-simulation modes in Docker using compose profiles.
-# Requires Docker Desktop/Engine and docker-compose v2.
 
 ROOT_DIR=$(cd "$(dirname "$0")/.." && pwd)
 cd "$ROOT_DIR"
 
-echo "[1/5] Building image..."
+for repo in ppflx gnark-gradient-prover; do
+    if [[ ! -d "../$repo" ]]; then
+        echo "[ERROR] ../$repo not found: the image is built from the directory holding all three checkouts" >&2
+        exit 1
+    fi
+done
+
+# Create the mounted directories as you, and run the container as you, so
+# everything it writes stays yours.
+mkdir -p dataset results keys .docker-state
+export PPFLX_UID PPFLX_GID
+PPFLX_UID=$(id -u)
+PPFLX_GID=$(id -g)
+
+if [[ $# -eq 0 ]]; then
+    set -- --dataset healthcare
+fi
+
+echo "[1/3] Building the image..."
 docker compose build
 
-echo "[2/5] Initializing keys and params..."
-docker compose --profile init run --rm init
+echo "[2/3] Generating missing keys..."
+docker compose run --rm init
 
-echo "[3/5] Running BASELINE..."
-docker compose --profile baseline up --abort-on-container-exit --quiet-pull
-docker compose --profile baseline down -v
-
-echo "[4/5] Running HE_TENSEAL..."
-docker compose --profile he up --abort-on-container-exit --quiet-pull
-docker compose --profile he down -v
-
-echo "[5/5] Running ZKP..."
-docker compose --profile zkp up --abort-on-container-exit --quiet-pull
-docker compose --profile zkp down -v
-
-echo "[6/5] Running DP..."
-docker compose --profile dp up --abort-on-container-exit --quiet-pull
-docker compose --profile dp down -v
-
-echo "[OK] All modes completed. Results in ./results/{baseline,he_tenseal,zkp,dp}"
-echo "Aggregating results inside Docker..."
-docker compose --profile aggregate run --rm aggregate || true
-docker compose --profile aggregate down -v || true
-
-echo "Optionally aggregate/plot using compare_methods_simple.py or your own tooling."
+echo "[3/3] Running compare.py $*"
+docker compose run --rm bench python compare.py "$@"

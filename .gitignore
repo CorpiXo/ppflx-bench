@@ -225,6 +225,12 @@ keys/
 # ZKP keys live outside the repository (FL_ZKP_KEYS_DIR, FL_ZKP_PK_DIR); the
 # pinned verifying keys ship with ppflx.
 
+# Concrete's debug dump after a failed TFHE circuit compilation
+.artifacts/
+
+# Keys and TFHE circuits generated in Docker (compose.yaml mounts it as /state)
+.docker-state/
+
 # Flower state (FLWR_HOME) that ppflx_bench.launch keeps next to each run's logs;
 # also keeps it out of the FAB that `flwr run` builds from this directory.
 .flwr/
