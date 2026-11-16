@@ -1,5 +1,7 @@
 # ppflx-bench
 
+[![CI](https://github.com/CorpiXo/ppflx-bench/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/CorpiXo/ppflx-bench/actions/workflows/ci.yml)
+
 Benchmarks for [ppflx](https://github.com/CorpiXo/ppflx): the same federated
 learning run under twelve privacy configurations — homomorphic encryption,
 zero-knowledge proofs of bounded updates, differential privacy and their
