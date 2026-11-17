@@ -83,7 +83,7 @@ cd ppflx-bench
 # Optional, on machines without a GPU: the CPU build of torch is a much smaller download
 pip install torch==2.3.1 torchvision==0.18.1 --index-url https://download.pytorch.org/whl/cpu
 
-pip install -r requirements.txt       # the harness, and ppflx v0.9.0 from git
+pip install -r requirements.txt       # the harness, and ppflx 0.9.1 from PyPI
 pip install -e "../ppflx[tfhe]"       # ppflx from the checkout beside this one, with Concrete-ML for the TFHE modes
 pip install pytest
 ```
