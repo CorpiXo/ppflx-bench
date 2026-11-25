@@ -11,6 +11,10 @@ license: Apache-2.0
 version: 0.9.1
 date-released: "2026-11-25"
 repository-code: "https://github.com/CorpiXo/ppflx-bench"
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.24535941
+    description: Concept DOI (all versions)
 abstract: >-
   A benchmark harness for ppflx, a privacy-preserving federated learning
   library: the same federated run under twelve privacy configurations
